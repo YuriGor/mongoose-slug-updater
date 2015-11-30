@@ -1,0 +1,55 @@
+{
+  "name": "mongoose-slug-generator",
+  "version": "0.0.1",
+  "description": "Mongoose plugin to create slugs and unique slugs in any field",
+  "main": "index.js",
+  "directories": {
+    "lib": "./lib"
+  },
+  "scripts": {
+    "prepublish": "npm run test",
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kubide/mongoose-slug-generator.git"
+  },
+  "keywords": [
+    "slug",
+    "url",
+    "permalink",
+    "slugify",
+    "seo",
+    "mongoose",
+    "generator",
+    "unique",
+    "seo friendly url",
+    "user friendly url",
+    "nice looking url",
+    "pretty url",
+    "clean url",
+    "static url",
+    "nice url"
+  ],
+  "author": "Kubide <hola@kubide.es> (http://kubide.es)",
+  "contributors": [
+    "Ángel Luis Quesada <angel.quesada@kubide.es> (http://gelito.me)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kubide/mongoose-slug-generator/issues"
+  },
+  "homepage": "https://github.com/Kubide/mongoose-slug-generator#readme",
+  "engines": {
+    "node": ">= 0.12.7"
+  },
+  "dependencies": {
+    "speakingurl": "^7.0.0"
+  },
+  "devDependencies": {
+    "chai": "^3.3.0",
+    "mocha": "^2.3.3",
+    "nodemon": "^1.7.1",
+    "supertest": "^1.1.0"
+  }
+}
