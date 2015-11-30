@@ -73,7 +73,6 @@ describe('Default plugin usage', function () {
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
-            console.log(err);
             should.not.exist(err);
             should.exist(doc);
             doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
