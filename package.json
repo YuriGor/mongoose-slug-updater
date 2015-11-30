@@ -44,11 +44,13 @@
     "node": ">= 0.12.7"
   },
   "dependencies": {
+    "async": "^1.5.0",
     "speakingurl": "^7.0.0"
   },
   "devDependencies": {
     "chai": "^3.3.0",
     "mocha": "^2.3.3",
+    "mongoose": "4.*",
     "nodemon": "^1.7.1",
     "supertest": "^1.1.0"
   }
