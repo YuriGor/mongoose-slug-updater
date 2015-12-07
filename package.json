@@ -1,6 +1,6 @@
 {
   "name": "mongoose-slug-generator",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Mongoose plugin to create slugs and unique slugs in any field",
   "main": "index.js",
   "directories": {

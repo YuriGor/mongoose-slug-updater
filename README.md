@@ -138,9 +138,9 @@ var mongoose = require('mongoose'),
 });
 ```
 
-You can find more options in the <a href="https://www.npmjs.com/package/speakingurl" target="_blank">speakingURL's npm page</a>
+You can find more options in the [speakingURL's npm page](https://www.npmjs.com/package/speakingurl)
 
 ## Support
 
-This plugin is proudly supported by <a href="http://kubide.es/" target="_blank">Kubide</a>
+This plugin is proudly supported by [Kubide](http://kubide.es/)
 
