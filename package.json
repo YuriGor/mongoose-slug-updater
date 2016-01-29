@@ -1,6 +1,6 @@
 {
   "name": "mongoose-slug-generator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Mongoose plugin to create slugs and unique slugs in any field",
   "main": "index.js",
   "directories": {
@@ -33,7 +33,8 @@
   ],
   "author": "Kubide <hola@kubide.es> (http://kubide.es)",
   "contributors": [
-    "Ángel Luis Quesada <angel.quesada@kubide.es> (http://gelito.me)"
+    "Ángel Luis Quesada <angel.quesada@kubide.es> (http://gelito.me)",
+    "Eneko Lakasta <eneko.lakasta@kubide.es>"
   ],
   "license": "MIT",
   "bugs": {
