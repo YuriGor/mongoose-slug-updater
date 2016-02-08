@@ -5,13 +5,22 @@ var mongoose = require('mongoose'),
     chai = require("chai"),
     should = chai.should(),
     //async = require('async'),
-    Resource;
+    ResourceShortId,
+    ResourceCounter;
 
 
 /* Setup */
 mongoose.connect('mongodb://localhost/mongoose-slug-generator');
 
-Resource = new mongoose.Schema({
+ResourceShortId = new mongoose.Schema({
+    title: {type: String},
+    subtitle: {type: String},
+    otherField: {type: String},
+    slug: {type: String, slug: ["title", "subtitle"]},
+    uniqueSlug: {type: String, unique: true, slug: "title"}
+});
+
+ResourceCounter = new mongoose.Schema({
     title: {type: String},
     subtitle: {type: String},
     otherField: {type: String},
@@ -22,7 +31,9 @@ Resource = new mongoose.Schema({
 
 mongoose.plugin(slugGenerator);
 //mongoose.plugin(slugGenerator, {separator: "_"});
-mongoose.model('Resource', Resource);
+
+mongoose.model('ResourceShortId', ResourceShortId);
+mongoose.model('ResourceCounter', ResourceCounter);
 
 
 /*
@@ -45,19 +56,77 @@ var resource = {};
 
 describe('Default plugin usage', function () {
     before(function (done) {
-        mongoose.model('Resource').remove({}, function () {
+        mongoose.model('ResourceShortId').remove({}, function () {
             done();
         });
     });
 
     after(function (done) {
-        mongoose.model('Resource').remove({}, function () {
+        mongoose.model('ResourceShortId').remove({}, function () {
             done();
         });
     });
 
     it('Create a new resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceShortId').create({
+            title: 'Am I wrong, fallin\' in love with you!',
+            subtitle: "tell me am I wrong, well, fallin' in love with you"
+        }, function (err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
+            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you');
+            done();
+        });
+    });
+
+    var previousUniqueSlug = "";
+
+    it('Create a second resource and check Slug and UniqueSlug', function (done) {
+        mongoose.model('ResourceShortId').create({
+            title: 'Am I wrong, fallin\' in love with you!',
+            subtitle: "tell me am I wrong, well, fallin' in love with you"
+        }, function (err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            previousUniqueSlug = doc.uniqueSlug;
+
+            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
+            doc.should.have.property('uniqueSlug').and.not.equal('am-i-wrong-fallin-in-love-with-you');
+            done();
+        });
+    });
+
+    it('Create a third resource and check Slug and UniqueSlug', function (done) {
+        mongoose.model('ResourceShortId').create({
+            title: 'Am I wrong, fallin\' in love with you!',
+            subtitle: "tell me am I wrong, well, fallin' in love with you"
+        }, function (err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+
+            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
+            doc.should.have.property('uniqueSlug').and.not.equal(previousUniqueSlug);
+            done();
+        });
+    });
+});
+
+describe('Counter plugin usage', function () {
+    before(function (done) {
+        mongoose.model('ResourceCounter').remove({}, function () {
+            done();
+        });
+    });
+
+    after(function (done) {
+        mongoose.model('ResourceCounter').remove({}, function () {
+            done();
+        });
+    });
+
+    it('Create a new resource and check Slug and UniqueSlug', function (done) {
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -70,7 +139,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a second resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -83,7 +152,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a third resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -97,7 +166,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 4th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -110,7 +179,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 5th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -123,7 +192,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 6th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -136,7 +205,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 7th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -149,7 +218,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 8th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -162,7 +231,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 9th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -175,7 +244,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 10th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -188,7 +257,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 11th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -201,7 +270,7 @@ describe('Default plugin usage', function () {
     });
 
     it('Create a 12th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
@@ -216,7 +285,7 @@ describe('Default plugin usage', function () {
 
     //it('Create 9 more resources and check UniqueSlug', function (done) {
     //    async.times(9, function(n, next){
-    //        mongoose.model('Resource').create({
+    //        mongoose.model('ResourceCounter').create({
     //            title: 'Am I wrong, fallin\' in love with you!',
     //            subtitle: "tell me am I wrong, well, fallin' in love with you"
     //        }, function (err, result) {
@@ -236,7 +305,7 @@ describe('Default plugin usage', function () {
     //});
 
     it('Create a different resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('Resource').create({
+        mongoose.model('ResourceCounter').create({
             title: 'While your other man was out there,',
             subtitle: "cheatin' and lyin', steppin' all over you"
         }, function (err, doc) {
@@ -289,9 +358,5 @@ describe('Default plugin usage', function () {
             done();
         })
     });
-
-
-
-
 });
 
