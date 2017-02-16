@@ -114,6 +114,61 @@ describe('Default plugin usage', function () {
             });
         }
     });
+
+    it('Create a different resource and check Slug and UniqueSlug', function (done) {
+        mongoose.model('ResourceShortId').create({
+            title: 'While your other man was out there,',
+            subtitle: "cheatin' and lyin', steppin' all over you"
+        }, function (err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property('slug').and.equal('while-your-other-man-was-out-there-cheatin-and-lyin-steppin-all-over-you');
+            doc.should.have.property('uniqueSlug').and.equal('while-your-other-man-was-out-there');
+            done();
+        });
+    });
+
+
+    it('Upsert a "watcher" element in an resource', function (done) {
+        resource.title = "Uh, sweet thing";
+        resource.save(function (err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property("title", 'Uh, sweet thing');
+            doc.should.have.property("subtitle", 'tell me am I wrong, well, fallin\' in love with you');
+            doc.should.have.property('slug', 'uh-sweet-thing-tell-me-am-i-wrong-well-fallin-in-love-with-you');
+            doc.should.have.property('uniqueSlug', 'uh-sweet-thing');
+            done();
+        })
+    });
+
+
+    it('Upsert a "not watcher" element in an resource', function (done) {
+        resource.description = "Tell me am I wrong, holdin' on to you so tight,";
+        resource.save(function (err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property("title", 'Uh, sweet thing');
+            doc.should.have.property("subtitle", 'tell me am I wrong, well, fallin\' in love with you');
+            doc.should.have.property('slug', 'uh-sweet-thing-tell-me-am-i-wrong-well-fallin-in-love-with-you');
+            doc.should.have.property('uniqueSlug', 'uh-sweet-thing');
+            done();
+        })
+    });
+
+
+    it('Upsert a "watcher" element in an resource trying to not update slug', function (done) {
+        resource.title = "uh-sweet-thing";
+        resource.save(function (err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property("title", 'uh-sweet-thing');
+            doc.should.have.property("subtitle", 'tell me am I wrong, well, fallin\' in love with you');
+            doc.should.have.property('slug', 'uh-sweet-thing-tell-me-am-i-wrong-well-fallin-in-love-with-you');
+            doc.should.have.property('uniqueSlug', 'uh-sweet-thing');
+            done();
+        })
+    });
 });
 
 describe('Counter plugin usage', function () {
