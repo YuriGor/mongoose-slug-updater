@@ -1,33 +1,36 @@
-"use stric";
+"use strict";
 
 var mongoose = require('mongoose'),
     slugGenerator = require('../.'),
     chai = require("chai"),
     should = chai.should(),
     //async = require('async'),
+    assert = require('assert'),
     ResourceShortId,
     ResourceCounter;
 
+var slug_padding_size = 4;
+var nIterations = 10;
 
 /* Setup */
+mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/mongoose-slug-generator');
 
 ResourceShortId = new mongoose.Schema({
-    title: {type: String},
-    subtitle: {type: String},
-    otherField: {type: String},
-    slug: {type: String, slug: ["title", "subtitle"]},
-    uniqueSlug: {type: String, unique: true, slug: "title"}
+    title: { type: String },
+    subtitle: { type: String },
+    otherField: { type: String },
+    slug: { type: String, slug: ["title", "subtitle"] },
+    uniqueSlug: { type: String, unique: true, slug: "title" }
 });
 
 ResourceCounter = new mongoose.Schema({
-    title: {type: String},
-    subtitle: {type: String},
-    otherField: {type: String},
-    slug: {type: String, slug: ["title", "subtitle"]},
-    uniqueSlug: {type: String, unique: true, slug_padding_size: 4, slug: "title"}
+    title: { type: String },
+    subtitle: { type: String },
+    otherField: { type: String },
+    slug: { type: String, slug: ["title", "subtitle"] },
+    uniqueSlug: { type: String, unique: true, slug_padding_size: slug_padding_size, slug: "title" }
 });
-
 
 mongoose.plugin(slugGenerator);
 //mongoose.plugin(slugGenerator, {separator: "_"});
@@ -55,6 +58,8 @@ mongoose.model('ResourceCounter', ResourceCounter);
 var resource = {};
 
 describe('Default plugin usage', function () {
+    var uniqueSlugs = [];
+
     before(function (done) {
         mongoose.model('ResourceShortId').remove({}, function () {
             done();
@@ -72,43 +77,42 @@ describe('Default plugin usage', function () {
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
+            resource = doc;
+
             should.not.exist(err);
             should.exist(doc);
             doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you');
+            assert.equal(-1, uniqueSlugs.indexOf(doc.uniqueSlug));
+
+            uniqueSlugs.push(doc.uniqueSlug);
+
             done();
         });
     });
 
-    var previousUniqueSlug = "";
+    it('Create ' + nIterations + ' resources and check Slug and UniqueSlug', function (done) {
+        runTest(1);
 
-    it('Create a second resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceShortId').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            previousUniqueSlug = doc.uniqueSlug;
+        function runTest(i) {
+            mongoose.model('ResourceShortId').create({
+                title: 'Am I wrong, fallin\' in love with you!',
+                subtitle: "tell me am I wrong, well, fallin' in love with you"
+            }, function (err, doc) {
+                should.not.exist(err);
+                should.exist(doc);
+                doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
+                assert.equal(-1, uniqueSlugs.indexOf(doc.uniqueSlug));
 
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.not.equal('am-i-wrong-fallin-in-love-with-you');
-            done();
-        });
-    });
+                uniqueSlugs.push(doc.uniqueSlug);
 
-    it('Create a third resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceShortId').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
+                if (i === nIterations) {
+                    return done();
+                }
 
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.not.equal(previousUniqueSlug);
-            done();
-        });
+                i++;
+                runTest(i);
+            });
+        }
     });
 });
 
@@ -130,6 +134,8 @@ describe('Counter plugin usage', function () {
             title: 'Am I wrong, fallin\' in love with you!',
             subtitle: "tell me am I wrong, well, fallin' in love with you"
         }, function (err, doc) {
+            resource = doc;
+
             should.not.exist(err);
             should.exist(doc);
             doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
@@ -138,171 +144,28 @@ describe('Counter plugin usage', function () {
         });
     });
 
-    it('Create a second resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0001');
-            done();
-        });
+    it('Create ' + nIterations + ' resources and check Slug and UniqueSlug', function (done) {
+        runTest(1);
+
+        function runTest(i) {
+            mongoose.model('ResourceCounter').create({
+                title: 'Am I wrong, fallin\' in love with you!',
+                subtitle: "tell me am I wrong, well, fallin' in love with you"
+            }, function (err, doc) {
+                should.not.exist(err);
+                should.exist(doc);
+                doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
+                doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-' + i.toString().padStart(slug_padding_size, '0'));
+
+                if (i === nIterations) {
+                    return done();
+                }
+
+                i++;
+                runTest(i);
+            });
+        }
     });
-
-    it('Create a third resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0002');
-            done();
-            resource = doc;
-        });
-    });
-
-    it('Create a 4th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0003');
-            done();
-        });
-    });
-
-    it('Create a 5th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0004');
-            done();
-        });
-    });
-
-    it('Create a 6th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0005');
-            done();
-        });
-    });
-
-    it('Create a 7th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0006');
-            done();
-        });
-    });
-
-    it('Create a 8th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0007');
-            done();
-        });
-    });
-
-    it('Create a 9th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0008');
-            done();
-        });
-    });
-
-    it('Create a 10th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0009');
-            done();
-        });
-    });
-
-    it('Create a 11th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0010');
-            done();
-        });
-    });
-
-    it('Create a 12th resource and check Slug and UniqueSlug', function (done) {
-        mongoose.model('ResourceCounter').create({
-            title: 'Am I wrong, fallin\' in love with you!',
-            subtitle: "tell me am I wrong, well, fallin' in love with you"
-        }, function (err, doc) {
-            should.not.exist(err);
-            should.exist(doc);
-            doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0011');
-            done();
-        });
-    });
-
-
-    //it('Create 9 more resources and check UniqueSlug', function (done) {
-    //    async.times(9, function(n, next){
-    //        mongoose.model('ResourceCounter').create({
-    //            title: 'Am I wrong, fallin\' in love with you!',
-    //            subtitle: "tell me am I wrong, well, fallin' in love with you"
-    //        }, function (err, result) {
-    //            console.log(n);
-    //            console.log(result);
-    //            next(err, result);
-    //        });
-    //    }, function(err, resources) {
-    //        //console.log(err);
-    //        //console.log(resources);
-    //        should.not.exist(err);
-    //        should.exist(resources);
-    //        //doc.should.have.property('slug').and.equal('am-i-wrong-fallin-in-love-with-you-tell-me-am-i-wrong-well-fallin-in-love-with-you');
-    //        resources[8].should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0011');
-    //        done();
-    //    });
-    //});
 
     it('Create a different resource and check Slug and UniqueSlug', function (done) {
         mongoose.model('ResourceCounter').create({
@@ -360,3 +223,11 @@ describe('Counter plugin usage', function () {
     });
 });
 
+if (typeof String.prototype.padStart === 'undefined') {
+    String.prototype.padStart = function (targetLength, padString) {
+        var s = this;
+        while (s.length < targetLength) s = padString + s;
+
+        return s;
+    };
+}
