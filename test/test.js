@@ -1,4 +1,4 @@
-"use stric";
+"use strict";
 
 var mongoose = require('mongoose'),
     slugGenerator = require('../.'),
@@ -6,7 +6,8 @@ var mongoose = require('mongoose'),
     should = chai.should(),
     //async = require('async'),
     ResourceShortId,
-    ResourceCounter;
+    ResourceCounter,
+    ResourceGroupedUnique;
 
 
 /* Setup */
@@ -28,12 +29,19 @@ ResourceCounter = new mongoose.Schema({
     uniqueSlug: {type: String, unique: true, slug_padding_size: 4, slug: "title"}
 });
 
+ResourceGroupedUnique = new mongoose.Schema({
+    title: {type: String},
+    subtitle: {type: String},
+    group: {type: String},
+    uniqueSlug: {type: String, uniqueGroup:['group'], slug_padding_size: 4, slug: "title", index: true}
+});
 
 mongoose.plugin(slugGenerator);
 //mongoose.plugin(slugGenerator, {separator: "_"});
 
 mongoose.model('ResourceShortId', ResourceShortId);
 mongoose.model('ResourceCounter', ResourceCounter);
+mongoose.model('ResourceGroupedUnique', ResourceGroupedUnique);
 
 
 /*
@@ -282,7 +290,6 @@ describe('Counter plugin usage', function () {
         });
     });
 
-
     //it('Create 9 more resources and check UniqueSlug', function (done) {
     //    async.times(9, function(n, next){
     //        mongoose.model('ResourceCounter').create({
@@ -360,3 +367,68 @@ describe('Counter plugin usage', function () {
     });
 });
 
+describe('Grouped Resources', function() {
+    before(function (done) {
+        mongoose.model('ResourceGroupedUnique').remove({}, function () {
+            done();
+        });
+    });
+
+    after(function (done) {
+        mongoose.model('ResourceGroupedUnique').remove({}, function () {
+            done();
+        });
+    });
+
+    it('Create new resource for grouped ID and check it\'s generated as normal', function(done) {
+        mongoose.model('ResourceGroupedUnique').create({
+            title: 'Am I wrong, fallin\' in love with you!',
+            subtitle: "tell me am I wrong, well, fallin' in love with you",
+            group: 'group 1'
+        }, function(err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you');
+            done();
+        });
+    });
+
+    it('Create new resource for grouped ID and check it\'s generated as with increment', function(done) {
+        mongoose.model('ResourceGroupedUnique').create({
+            title: 'Am I wrong, fallin\' in love with you!',
+            subtitle: "tell me am I wrong, well, fallin' in love with you",
+            group: 'group 1'
+        }, function(err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0001');
+            done();
+        });
+    });
+
+    it('Create new resource for second group and check it\'s generated as normal', function(done) {
+        mongoose.model('ResourceGroupedUnique').create({
+            title: 'Am I wrong, fallin\' in love with you!',
+            subtitle: "tell me am I wrong, well, fallin' in love with you",
+            group: 'group 2'
+        }, function(err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you');
+            done();
+        });
+    });
+
+    it('Create new resource for second group and check it\'s generated as with increment', function(done) {
+        mongoose.model('ResourceGroupedUnique').create({
+            title: 'Am I wrong, fallin\' in love with you!',
+            subtitle: "tell me am I wrong, well, fallin' in love with you",
+            group: 'group 2'
+        }, function(err, doc) {
+            should.not.exist(err);
+            should.exist(doc);
+            doc.should.have.property('uniqueSlug').and.equal('am-i-wrong-fallin-in-love-with-you-0001');
+            done();
+        });
+    });
+});
