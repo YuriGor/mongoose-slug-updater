@@ -148,7 +148,45 @@ mongoose.model('Resource').create({
     subtitle: "tell me am I wrong, well, fallin' in love with you"
 }) // slug -> 'am-i-wrong-fallin-in-love-with-you-0002'
 ```
+### Unique slug within a group
 
+Sometimes you only want slugs to be unique within a specific group. This is done with the `uniqueGroup` property which is an array of fields to group by:
+
+**example unique per group (using the field named 'group')**
+```js
+ResourceGroupedUnique = new mongoose.Schema({
+    title: {type: String},
+    subtitle: {type: String},
+    group: {type: String},
+    uniqueSlug: {type: String, uniqueGroup:['group'], slug_padding_size: 4, slug: "title", index: true}
+});
+
+ mongoose.model('ResourceGroupedUnique').create({
+    title: 'Am I wrong, fallin\' in love with you!',
+    subtitle: "tell me am I wrong, well, fallin' in love with you",
+    group: 'group 1'
+}); // slug -> 'am-i-wrong-fallin-in-love-with-you'
+
+ mongoose.model('ResourceGroupedUnique').create({
+    title: 'Am I wrong, fallin\' in love with you!',
+    subtitle: "tell me am I wrong, well, fallin' in love with you",
+    group: 'group 2'
+}); // slug -> 'am-i-wrong-fallin-in-love-with-you'
+
+ mongoose.model('ResourceGroupedUnique').create({
+    title: 'Am I wrong, fallin\' in love with you!',
+    subtitle: "tell me am I wrong, well, fallin' in love with you",
+    group: 'group 1'
+}); // slug -> 'am-i-wrong-fallin-in-love-with-you-0001'
+
+ mongoose.model('ResourceGroupedUnique').create({
+    title: 'Am I wrong, fallin\' in love with you!',
+    subtitle: "tell me am I wrong, well, fallin' in love with you",
+    group: 'group 2'
+}); // slug -> 'am-i-wrong-fallin-in-love-with-you-0001'
+
+```
+**Important: you must not have a `unique: true` option, but it's a good idea to have an `index: true` option.**
 
 ### Choose your own options
 
