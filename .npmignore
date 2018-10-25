@@ -1,3 +1,6 @@
 node_modules
 nodemon.json
 *.log
+.idea
+.eslintrc.json
+tasks.todone

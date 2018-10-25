@@ -1,19 +1,19 @@
-# mongoose-slug-generator
+# mongoose-slug-updater
 
-Mongoose plugin for creating slugs based on mongoose schema fields. For example you can create a slug based on a document's title and author's name: _my-post-title-kevin-roosevelt_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
+Mongoose plugin for creating and updating slugs based on mongoose schema fields. For example you can create a slug based on a document's title and author's name: _my-post-title-kevin-roosevelt_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
 
 ## Installation
 
 The best way to install it is using **npm**
 
 ```sh
-npm install mongoose-slug-generator --save
+npm install mongoose-slug-updater --save
 ```
 
 ## Loading
 
 ```js
-var slug = require('mongoose-slug-generator');
+var slug = require('mongoose-slug-updater');
 ```
 
 ## Initialization
@@ -35,7 +35,7 @@ If you only want to create the slug based on a simple field.
 
 ```js
 var mongoose = require('mongoose'),
-    slug = require('mongoose-slug-generator'),
+    slug = require('mongoose-slug-updater'),
     mongoose.plugin(slug),
     Schema = mongoose.Schema,
     schema = new Schema({
@@ -51,7 +51,7 @@ You can add as many slug fields as you wish
 
 ```js
 var mongoose = require('mongoose'),
-    slug = require('mongoose-slug-generator'),
+    slug = require('mongoose-slug-updater'),
     mongoose.plugin(slug),
     Schema = mongoose.Schema,
     schema = new Schema({
@@ -70,7 +70,7 @@ If you want, you can use more than one field in order to create a new slug field
 
 ```js
 var mongoose = require('mongoose'),
-    slug = require('mongoose-slug-generator'),
+    slug = require('mongoose-slug-updater'),
     mongoose.plugin(slug),
     Schema = mongoose.Schema,
     schema = new Schema({
@@ -87,7 +87,7 @@ To create a unique slug field, you must only add add the *unique: true* paramete
 
 ```js
 var mongoose = require('mongoose'),
-    slug = require('mongoose-slug-generator'),
+    slug = require('mongoose-slug-updater'),
     mongoose.plugin(slug),
     Schema = mongoose.Schema,
     schema = new Schema({
@@ -124,7 +124,7 @@ Alternatively you can modify this behaviour and instead of appending a random st
 
 ```js
 var mongoose = require('mongoose'),
-    slug = require('mongoose-slug-generator'),
+    slug = require('mongoose-slug-updater'),
     mongoose.plugin(slug),
     Schema = mongoose.Schema,
     schema = new Schema({
@@ -188,13 +188,58 @@ ResourceGroupedUnique = new mongoose.Schema({
 ```
 **Important: you must not have a `unique: true` option, but it's a good idea to have an `index: true` option.**
 
+### Updating slug and keep it permanent
+
+By default slugs will be created/updated for any related fields changed by any of `create`(it's actually a `save` too), `save`, `update`, `updateOne` and `updateMany` operations (`findOneAndUpdate` is not supported yet).
+You can specify which of supported methods should be watched:
+
+```js
+const HooksSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, slug: 'title',
+    //by default all hooks are enabled
+    //on:{ save: true, update: true, updateOne: true, updateMany: true }
+  },
+  slugNoSave: { type: String, slug: 'title', on: { save: false } },
+  slugNoUpdate: { type: String, slug: 'title', on: { update: false } },
+  slugNoUpdateOne: { type: String, slug: 'title', on: { updateOne: false } },
+  slugNoUpdateMany: { type: String, slug: 'title', on: { updateMany: false } },
+});
+```
+Note, that flags will affect both creation and updating of documents,
+so if you disabled `save` and still want slug to be generated initially,
+use `upsert` option of `update***` methods.
+On `update` and `updateMany` multiply affected records also handled, but be careful with performance,
+because one-by-one iteration over affected documents may happen in case of unique slugs. In this case `_id` field is required.
+For `update*` family of operations additional queries may be performed, to retrieve fields missing in the query.
+For example if compound slug was affected by this update.
+So if you already have necessary data - it's better for performance to specify all the fields listed in the compound slug and old slug value in update query.
+
+#### `permanent` option
+If you want to generated slug initially but keep it during further modifications of related fields, use `permanent` flag like this:
+```js
+ResourcePermanent = new mongoose.Schema({
+  title: { type: String },
+  subtitle: { type: String },
+  otherField: { type: String },
+  slug: { type: String, slug: ['title', 'subtitle'] },//normal slug
+  titleSlug: { type: String, slug: 'title', permanent: true },//permanent slug
+  subtitleSlug: {
+    type: String,
+    slug: 'subtitle',
+    permanent: true,//permanent option
+    slug_padding_size: 4,
+  },
+});
+```
+
 ### Choose your own options
 
 You can change any options adding to the plugin
 
 ```js
 var mongoose = require('mongoose'),
-    slug = require('mongoose-slug-generator'),
+    slug = require('mongoose-slug-updater'),
     options = {
         separator: "-",
         lang: "en",
@@ -213,5 +258,14 @@ You can find more options in the [speakingURL's npm page](https://www.npmjs.com/
 
 ## Support
 
-This plugin is proudly supported by [Kubide](http://kubide.es/)
+This plugin is supported by [Yuri Gor](http://yurigor.com/)
 
+### About
+
+This plugin was initially forked from [mongoose-slug-generator](https://github.com/Kubide/mongoose-slug-generator), which is not maintained currently.
+
+Merged and fixed `uniqueGroup` feature by [rickogden](https://github.com/rickogden).
+
+`update`, `updateOne` and `updateMany` operations support implemented.
+
+Plugin rewritten with modern js and a lot of tests were added.
