@@ -1,6 +1,8 @@
 # mongoose-slug-updater
 
-Mongoose plugin for creating and updating slugs based on mongoose schema fields. For example you can create a slug based on a document's title and author's name: _my-post-title-kevin-roosevelt_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
+Mongoose plugin for creating and updating slugs based on mongoose schema fields.
+Operations `save`, `update`, `updateOne` and `updateMany` are supported.
+For example you can create a slug based on a document's title and author's name: _my-post-title-slim-shady_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
 
 ## Installation
 
