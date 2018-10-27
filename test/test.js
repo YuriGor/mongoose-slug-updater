@@ -11,7 +11,10 @@ var mongoose = require('mongoose'),
   ResourceCounter,
   ResourceGroupedUniqueCounter,
   ResourceGroupedUniqueShortId,
-  ResourcePermanent;
+  ResourcePermanent,
+  HooksSchema,
+  ChildSchema,
+  ParentSchema;
 
 var slug_padding_size = 4;
 var nIterations = 100;
@@ -25,9 +28,6 @@ before('new inmemory mongo', async function() {
   mongod = new MongodbMemoryServer.default({
     instance: {
       dbName: 'slug',
-    },
-    binary: {
-      version: '3.6.8',
     },
   });
   const mongoUri = await mongod.getConnectionString();
@@ -106,6 +106,38 @@ ResourcePermanent = new mongoose.Schema({
   },
 });
 
+HooksSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, slug: 'title' },
+  slugNoSave: { type: String, slug: 'title', on: { save: false } },
+  slugNoUpdate: { type: String, slug: 'title', on: { update: false } },
+  slugNoUpdateOne: { type: String, slug: 'title', on: { updateOne: false } },
+  slugNoUpdateMany: { type: String, slug: 'title', on: { updateMany: false } },
+});
+
+ChildSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, /*unique: true,*/ slug: 'title' },
+});
+
+ParentSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, unique: true, slug: 'title' },
+  list: { type: Array },
+  singleChild: ChildSchema,
+  children: [ChildSchema],
+  inlineChild: {
+    title: { type: String },
+    slug: { type: String, slug: 'title' },
+  },
+  inlineChildren: [
+    {
+      title: { type: String },
+      slug: { type: String, slug: 'title' },
+    },
+  ],
+});
+
 mongoose.plugin(slugGenerator);
 //mongoose.plugin(slugGenerator, {separator: "_"});
 
@@ -120,6 +152,9 @@ const GroupedUniqueShortId = mongoose.model(
   ResourceGroupedUniqueShortId
 );
 const Permanent = mongoose.model('ResourcePermanent', ResourcePermanent);
+const Hook = mongoose.model('HooksSchema', HooksSchema);
+const Child = mongoose.model('ChildSchema', ChildSchema);
+const Parent = mongoose.model('ParentSchema', ParentSchema);
 
 /*
  https://www.youtube.com/watch?v=--UPSacwPDA
@@ -1208,19 +1243,7 @@ describe('Permanent option', function() {
   });
 });
 
-const HooksSchema = new mongoose.Schema({
-  title: { type: String },
-  slug: { type: String, slug: 'title' },
-  slugNoSave: { type: String, slug: 'title', on: { save: false } },
-  slugNoUpdate: { type: String, slug: 'title', on: { update: false } },
-  slugNoUpdateOne: { type: String, slug: 'title', on: { updateOne: false } },
-  slugNoUpdateMany: { type: String, slug: 'title', on: { updateMany: false } },
-});
-const Hook = mongoose.model('HooksSchema', HooksSchema);
-
 describe('Turn hooks on/off', function() {
-  var uniqueSlugs = [];
-
   beforeEach(async () => {
     await Hook.remove({});
   });
@@ -1235,27 +1258,17 @@ describe('Turn hooks on/off', function() {
     });
     let newSlug = 'am-i-wrong-fallin-in-love-with-you';
 
-    doc.should.have
-      .property('slug')
-      .and.equal(newSlug);
+    doc.should.have.property('slug').and.equal(newSlug);
 
     should.not.exist(doc.slugNoSave);
 
-    doc.should.have
-      .property('slugNoUpdate')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdate').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdate')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdate').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateOne')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateOne').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateMany')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateMany').and.equal(newSlug);
   });
 
   it('`save` - update resource', async () => {
@@ -1274,25 +1287,15 @@ describe('Turn hooks on/off', function() {
     let oldSlug = 'am-i-wrong-fallin-in-love-with-you';
     let newSlug = 'tell-me-am-i-wrong-well-fallin-in-love-with-you';
 
-    doc.should.have
-      .property('slug')
-      .and.equal(newSlug);
+    doc.should.have.property('slug').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoSave')
-      .and.equal(oldSlug);
+    doc.should.have.property('slugNoSave').and.equal(oldSlug);
 
-    doc.should.have
-      .property('slugNoUpdate')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdate').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateOne')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateOne').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateMany')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateMany').and.equal(newSlug);
   });
 
   it('`update` - create(upsert) a new resource', async () => {
@@ -1306,23 +1309,15 @@ describe('Turn hooks on/off', function() {
     let doc = await Hook.findOne({});
     let newSlug = 'am-i-wrong-fallin-in-love-with-you';
     // console.log(doc);
-    doc.should.have
-      .property('slug')
-      .and.equal(newSlug);
+    doc.should.have.property('slug').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoSave')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoSave').and.equal(newSlug);
 
     should.not.exist(doc.slugNoUpdate);
 
-    doc.should.have
-      .property('slugNoUpdateOne')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateOne').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateMany')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateMany').and.equal(newSlug);
   });
 
   it('`update` - update resource', async () => {
@@ -1334,29 +1329,19 @@ describe('Turn hooks on/off', function() {
       { _id },
       { title: "tell me am I wrong, well, fallin' in love with you" }
     );
-    doc = await Hook.findOne({_id});
+    doc = await Hook.findOne({ _id });
     let oldSlug = 'am-i-wrong-fallin-in-love-with-you';
     let newSlug = 'tell-me-am-i-wrong-well-fallin-in-love-with-you';
 
-    doc.should.have
-      .property('slug')
-      .and.equal(newSlug);
+    doc.should.have.property('slug').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoSave')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoSave').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdate')
-      .and.equal(oldSlug);
+    doc.should.have.property('slugNoUpdate').and.equal(oldSlug);
 
-    doc.should.have
-      .property('slugNoUpdateOne')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateOne').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateMany')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateMany').and.equal(newSlug);
   });
 
   it('`updateOne` - create(upsert) a new resource', async () => {
@@ -1371,23 +1356,15 @@ describe('Turn hooks on/off', function() {
     let doc = await Hook.findOne({});
     let newSlug = 'am-i-wrong-fallin-in-love-with-you';
     // console.log(doc);
-    doc.should.have
-      .property('slug')
-      .and.equal(newSlug);
+    doc.should.have.property('slug').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoSave')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoSave').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdate')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdate').and.equal(newSlug);
 
     should.not.exist(doc.slugNoUpdateOne);
 
-    doc.should.have
-      .property('slugNoUpdateMany')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateMany').and.equal(newSlug);
   });
 
   it('`updateOne` - update resource', async () => {
@@ -1399,29 +1376,19 @@ describe('Turn hooks on/off', function() {
       { _id },
       { title: "tell me am I wrong, well, fallin' in love with you" }
     );
-    doc = await Hook.findOne({_id});
+    doc = await Hook.findOne({ _id });
     let oldSlug = 'am-i-wrong-fallin-in-love-with-you';
     let newSlug = 'tell-me-am-i-wrong-well-fallin-in-love-with-you';
 
-    doc.should.have
-      .property('slug')
-      .and.equal(newSlug);
+    doc.should.have.property('slug').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoSave')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoSave').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdate')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdate').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateOne')
-      .and.equal(oldSlug);
+    doc.should.have.property('slugNoUpdateOne').and.equal(oldSlug);
 
-    doc.should.have
-      .property('slugNoUpdateMany')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateMany').and.equal(newSlug);
   });
 
   it('`updateMany` - create(upsert) a new resource', async () => {
@@ -1436,21 +1403,13 @@ describe('Turn hooks on/off', function() {
     let doc = await Hook.findOne({});
     let newSlug = 'am-i-wrong-fallin-in-love-with-you';
     // console.log(doc);
-    doc.should.have
-      .property('slug')
-      .and.equal(newSlug);
+    doc.should.have.property('slug').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoSave')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoSave').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdate')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdate').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateOne')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateOne').and.equal(newSlug);
 
     should.not.exist(doc.slugNoUpdateMany);
   });
@@ -1464,29 +1423,118 @@ describe('Turn hooks on/off', function() {
       { _id },
       { title: "tell me am I wrong, well, fallin' in love with you" }
     );
-    doc = await Hook.findOne({_id});
+    doc = await Hook.findOne({ _id });
     let oldSlug = 'am-i-wrong-fallin-in-love-with-you';
     let newSlug = 'tell-me-am-i-wrong-well-fallin-in-love-with-you';
 
-    doc.should.have
-      .property('slug')
-      .and.equal(newSlug);
+    doc.should.have.property('slug').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoSave')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoSave').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdate')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdate').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateOne')
-      .and.equal(newSlug);
+    doc.should.have.property('slugNoUpdateOne').and.equal(newSlug);
 
-    doc.should.have
-      .property('slugNoUpdateMany')
-      .and.equal(oldSlug);
+    doc.should.have.property('slugNoUpdateMany').and.equal(oldSlug);
   });
+});
 
+// describe('Nested Schema', function() {
+//   beforeEach(async () => {
+//     await Hook.remove({});
+//   });
+//
+//   afterEach(async () => {
+//     await Hook.remove({});
+//   });
+//
+//   // it('Save nested docs', async () => {
+//   //   let doc = await Parent.create({
+//   //     title: "Am I wrong, fallin' in love with you!",
+//   //     singleChild: {
+//   //       title: "tell me am I wrong, well, fallin' in love with you",
+//   //     },
+//   //     children: [
+//   //       {
+//   //         title: 'While your other man was out there',
+//   //       },
+//   //       {
+//   //         title: "cheatin' and lyin', steppin' all over you",
+//   //       },
+//   //       {
+//   //         title: 'Uh, sweet thing',
+//   //       },
+//   //       {
+//   //         title: "Tell me am I wrong, holdin' on to you so tight,",
+//   //       },
+//   //       {
+//   //         title: "Tell me, tell me, am I wrong, holdin' on to you so tight",
+//   //       },
+//   //     ],
+//   //   });
+//   //   // console.log(doc);
+//   // });
+//
+//   it('UpdateOne new nested docs', async () => {
+//     await Parent.updateOne(
+//       {},
+//       {
+//         title: "Am I wrong, fallin' in love with you!",
+//         singleChild: {
+//           title: "tell me am I wrong, well, fallin' in love with you",
+//         },
+//         children: [
+//           {
+//             title: 'While your other man was out there',
+//           },
+//           {
+//             title: "cheatin' and lyin', steppin' all over you",
+//           },
+//           {
+//             title: 'Uh, sweet thing',
+//           },
+//           {
+//             title: "Tell me am I wrong, holdin' on to you so tight,",
+//           },
+//           {
+//             title: "Tell me, tell me, am I wrong, holdin' on to you so tight",
+//           },
+//         ],
+//       },
+//       { upsert: true }
+//     );
+//     let doc = await Parent.findOne({});
+//     // console.log(doc);
+//     //     doc.should.have.property("slug")
+//     //     .and.equal('am-i-wrong-fallin-in-love-with-you');
+//     //
+//     //     doc.should.have.property("singleChild")
+//     //     .and.should.have.property('slug')
+//     //     .and.equal('tell-me-am-i-wrong-well-fallin-in-love-with-you');
+//   });
+// });
+
+describe('Counter plugin usage to check titles including other titles', function() {
+  before(async () => {
+    await Counter.remove({});
+  });
+  before(async () => {
+    await Counter.remove({});
+  });
+  it('Create a resource and check Slug and UniqueSlug', async () => {
+    let doc = await Counter.create({
+      title: 'pineapple',
+      subtitle: 'subtitle',
+    });
+    doc.should.have.property('slug').and.equal('pineapple-subtitle');
+    doc.should.have.property('uniqueSlug').and.equal('pineapple');
+  });
+  it('Create a second resource which has a title part of first resources title', async () => {
+    let doc = await Counter.create({
+      title: 'apple',
+      subtitle: 'subtitle',
+    });
+    doc.should.have.property('slug').and.equal('apple-subtitle');
+    doc.should.have.property('uniqueSlug').and.equal('apple');
+  });
 });

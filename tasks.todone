@@ -1,6 +1,6 @@
-- update docs to reflect permanent option
++- update docs to reflect permanent option
 +- add options to turn different hooks on/off
-- update docs to reflect update/One/Many option
++- update docs to reflect update/One/Many option
 +- add tests for permanent flag
 - notify rickogden/mongoose-slug-generator about group update bug (he will need to extend watcher list)
 	- when we move doc with counted slug to another group with same docs - slug not updated

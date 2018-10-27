@@ -56,7 +56,7 @@
     "chai": "^4.2.0",
     "eslint": "*",
     "mocha": "^5.2.0",
-    "mongodb-memory-server": "*",
+    "mongodb-memory-server": "^2.6.2",
     "mongoose": "^5.0.0"
   }
 }
