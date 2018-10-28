@@ -6,7 +6,7 @@
     ".idea",
     "node_modules/**/node_modules"
   ],
-  "verbose": true,
+  "verbose": false,
   "execMap": {
     "js": "node --harmony"
   },
