@@ -1,6 +1,6 @@
 {
   "name": "mongoose-slug-updater",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Mongoose plugin to create and update slugs and unique slugs in any field",
   "main": "index.js",
   "directories": {
