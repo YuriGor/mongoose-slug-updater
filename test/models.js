@@ -78,6 +78,7 @@ const HooksSchema = new mongoose.Schema({
   slugNoUpdate: { type: String, slug: 'title', on: { update: false } },
   slugNoUpdateOne: { type: String, slug: 'title', on: { updateOne: false } },
   slugNoUpdateMany: { type: String, slug: 'title', on: { updateMany: false } },
+  slugNoFindOneAndUpdate: { type: String, slug: 'title', on: { findOneAndUpdate: false } },
 });
 
 const ChildSchema = new mongoose.Schema({

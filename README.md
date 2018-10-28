@@ -1,7 +1,7 @@
 # mongoose-slug-updater
 
 Mongoose plugin for creating and updating slugs based on mongoose schema fields.
-Operations `save`, `update`, `updateOne` and `updateMany` are supported.
+Operations `save`, `update`, `updateOne`, `updateMany` and `findOneAndUpdate` are supported.
 For example you can create a slug based on a document's title and author's name: _my-post-title-slim-shady_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
 
 ## Installation
@@ -29,7 +29,7 @@ mongoose.plugin(slug);
 
 This plugin is based on the idea of using the **mongoose schema** as the way to check the use of slug fields.
 
-The plugin checks and updates automatically the *slug field* with the correct slug.
+The plugin checks and updates automatically the _slug field_ with the correct slug.
 
 ### Basic Usage
 
@@ -45,7 +45,6 @@ var mongoose = require('mongoose'),
         slug: { type: String, slug: "title" }
 });
 ```
-
 
 ### Multiple slug fields
 
@@ -65,7 +64,6 @@ var mongoose = require('mongoose'),
 });
 ```
 
-
 ### Multiple fields to create the slug
 
 If you want, you can use more than one field in order to create a new slug field.
@@ -82,10 +80,9 @@ var mongoose = require('mongoose'),
 });
 ```
 
-
 ### Unique slug field
 
-To create a unique slug field, you must only add add the *unique: true* parameter in the path (also, this way the default mongo unique index gets created)
+To create a unique slug field, you must only add add the _unique: true_ parameter in the path (also, this way the default mongo unique index gets created)
 
 ```js
 var mongoose = require('mongoose'),
@@ -105,22 +102,22 @@ If _unique_ is set, the plugin searches in the mongo database, and if the slug a
 
 ```js
 mongoose.model('Resource').create({
-    title: 'Am I wrong, fallin\' in love with you!',
-    subtitle: "tell me am I wrong, well, fallin' in love with you"
-}) // slug -> 'am-i-wrong-fallin-in-love-with-you'
+    title: "Am I wrong, fallin' in love with you!",
+    subtitle: "tell me am I wrong, well, fallin' in love with you",
+}); // slug -> 'am-i-wrong-fallin-in-love-with-you'
 
 mongoose.model('Resource').create({
-    title: 'Am I wrong, fallin\' in love with you!',
-    subtitle: "tell me am I wrong, well, fallin' in love with you"
-}) // slug -> 'am-i-wrong-fallin-in-love-with-you-Nyiy4wW9l'
+    title: "Am I wrong, fallin' in love with you!",
+    subtitle: "tell me am I wrong, well, fallin' in love with you",
+}); // slug -> 'am-i-wrong-fallin-in-love-with-you-Nyiy4wW9l'
 
 mongoose.model('Resource').create({
-    title: 'Am I wrong, fallin\' in love with you!',
-    subtitle: "tell me am I wrong, well, fallin' in love with you"
-}) // slug -> 'am-i-wrong-fallin-in-love-with-you-NJeskEPb5e'
+    title: "Am I wrong, fallin' in love with you!",
+    subtitle: "tell me am I wrong, well, fallin' in love with you",
+}); // slug -> 'am-i-wrong-fallin-in-love-with-you-NJeskEPb5e'
 ```
 
-Alternatively you can modify this behaviour and instead of appending a random string, an incremental counter will be used. For that to happen, you must use the parameter *slug_padding_size* specifying the total length of the counter:  
+Alternatively you can modify this behaviour and instead of appending a random string, an incremental counter will be used. For that to happen, you must use the parameter _slug_padding_size_ specifying the total length of the counter:
 
 **example counter**
 
@@ -150,88 +147,115 @@ mongoose.model('Resource').create({
     subtitle: "tell me am I wrong, well, fallin' in love with you"
 }) // slug -> 'am-i-wrong-fallin-in-love-with-you-0002'
 ```
+
+If you don't want to define your field as unique for some reasons, but still need slug to be unique,
+you can use `unique_slug:true` option instead of `unique`.
+This option will not cause index creation, but still will be considered by the plugin.
+
 ### Unique slug within a group
 
 Sometimes you only want slugs to be unique within a specific group. This is done with the `uniqueGroup` property which is an array of fields to group by:
 
 **example unique per group (using the field named 'group')**
+
 ```js
 ResourceGroupedUnique = new mongoose.Schema({
-    title: {type: String},
-    subtitle: {type: String},
-    group: {type: String},
-    uniqueSlug: {type: String, uniqueGroup:['group'], slug_padding_size: 4, slug: "title", index: true}
+    title: { type: String },
+    subtitle: { type: String },
+    group: { type: String },
+    uniqueSlug: {
+        type: String,
+        uniqueGroup: ['group'],
+        slug_padding_size: 4,
+        slug: 'title',
+        index: true,
+    },
 });
 
- mongoose.model('ResourceGroupedUnique').create({
-    title: 'Am I wrong, fallin\' in love with you!',
+mongoose.model('ResourceGroupedUnique').create({
+    title: "Am I wrong, fallin' in love with you!",
     subtitle: "tell me am I wrong, well, fallin' in love with you",
-    group: 'group 1'
+    group: 'group 1',
 }); // slug -> 'am-i-wrong-fallin-in-love-with-you'
 
- mongoose.model('ResourceGroupedUnique').create({
-    title: 'Am I wrong, fallin\' in love with you!',
+mongoose.model('ResourceGroupedUnique').create({
+    title: "Am I wrong, fallin' in love with you!",
     subtitle: "tell me am I wrong, well, fallin' in love with you",
-    group: 'group 2'
+    group: 'group 2',
 }); // slug -> 'am-i-wrong-fallin-in-love-with-you'
 
- mongoose.model('ResourceGroupedUnique').create({
-    title: 'Am I wrong, fallin\' in love with you!',
+mongoose.model('ResourceGroupedUnique').create({
+    title: "Am I wrong, fallin' in love with you!",
     subtitle: "tell me am I wrong, well, fallin' in love with you",
-    group: 'group 1'
+    group: 'group 1',
 }); // slug -> 'am-i-wrong-fallin-in-love-with-you-0001'
 
- mongoose.model('ResourceGroupedUnique').create({
-    title: 'Am I wrong, fallin\' in love with you!',
+mongoose.model('ResourceGroupedUnique').create({
+    title: "Am I wrong, fallin' in love with you!",
     subtitle: "tell me am I wrong, well, fallin' in love with you",
-    group: 'group 2'
+    group: 'group 2',
 }); // slug -> 'am-i-wrong-fallin-in-love-with-you-0001'
-
 ```
+
 **Important: you must not have a `unique: true` option, but it's a good idea to have an `index: true` option.**
 
-### Updating slug and keep it permanent
+### Updating slug or keeping it permanent
 
-By default slugs will be created/updated for any related fields changed by any of `create`(it's actually a `save` too), `save`, `update`, `updateOne` and `updateMany` operations (`findOneAndUpdate` is not supported yet).
+By default slugs will be created/updated for any related fields changed by any of `create`(it's actually a `save` too), `save`, `update`, `updateOne`, `updateMany` and `findOneAndUpdate` operations.
 You can specify which of supported methods should be watched:
 
 ```js
 const HooksSchema = new mongoose.Schema({
-  title: { type: String },
-  slug: { type: String, slug: 'title',
-    //by default all hooks are enabled
-    //on:{ save: true, update: true, updateOne: true, updateMany: true }
-  },
-  slugNoSave: { type: String, slug: 'title', on: { save: false } },
-  slugNoUpdate: { type: String, slug: 'title', on: { update: false } },
-  slugNoUpdateOne: { type: String, slug: 'title', on: { updateOne: false } },
-  slugNoUpdateMany: { type: String, slug: 'title', on: { updateMany: false } },
+    title: { type: String },
+    slug: {
+        type: String,
+        slug: 'title',
+        //by default all hooks are enabled
+        //on:{ save: true, update: true, updateOne: true, updateMany: true, findOneAndUpdate: true }
+    },
+    slugNoSave: { type: String, slug: 'title', on: { save: false } },
+    slugNoUpdate: { type: String, slug: 'title', on: { update: false } },
+    slugNoUpdateOne: { type: String, slug: 'title', on: { updateOne: false } },
+    slugNoUpdateMany: {
+        type: String,
+        slug: 'title',
+        on: { updateMany: false },
+    },
+    slugNoFindOneAndUpdate: {
+        type: String,
+        slug: 'title',
+        on: { findOneAndUpdate: false },
+    },
 });
 ```
+
 Note, that flags will affect both creation and updating of documents,
 so if you disabled `save` and still want slug to be generated initially,
 use `upsert` option of `update***` methods.
 On `update` and `updateMany` multiply affected records also handled, but be careful with performance,
-because one-by-one iteration over affected documents may happen in case of unique slugs. In this case `_id` field is required.
-For `update*` family of operations additional queries may be performed, to retrieve fields missing in the query.
+because one-by-one iteration over affected documents may happen in case of unique slugs.
+In this case `_id` field is required.
+For `update*` family of operations additional queries may be performed, to retrieve data missing in the query.
 For example if compound slug was affected by this update.
 So if you already have necessary data - it's better for performance to specify all the fields listed in the compound slug and old slug value in update query.
 
 #### `permanent` option
-If you want to generated slug initially but keep it during further modifications of related fields, use `permanent` flag like this:
+
+If you want to generate slug initially, but keep it unchanged during further modifications of related fields, use `permanent` flag like this:
+
 ```js
 ResourcePermanent = new mongoose.Schema({
-  title: { type: String },
-  subtitle: { type: String },
-  otherField: { type: String },
-  slug: { type: String, slug: ['title', 'subtitle'] },//normal slug
-  titleSlug: { type: String, slug: 'title', permanent: true },//permanent slug
-  subtitleSlug: {
-    type: String,
-    slug: 'subtitle',
-    permanent: true,//permanent option
-    slug_padding_size: 4,
-  },
+    title: { type: String },
+    subtitle: { type: String },
+    otherField: { type: String },
+    slug: { type: String, slug: ['title', 'subtitle'] }, //normal slug
+    titleSlug: { type: String, slug: 'title', permanent: true }, //permanent slug
+    subtitleSlug: {
+        type: String,
+        slug: 'subtitle',
+        permanent: true, //permanent option
+        slug_padding_size: 4,
+    },
 });
 ```
 
@@ -268,6 +292,6 @@ This plugin was initially forked from [mongoose-slug-generator](https://github.c
 
 Merged and fixed `uniqueGroup` feature by [rickogden](https://github.com/rickogden).
 
-`update`, `updateOne` and `updateMany` operations support implemented.
+`update`, `updateOne`, `updateMany` and `findOneAndUpdate` operations support implemented.
 
 Plugin rewritten with modern js and a lot of tests were added.
