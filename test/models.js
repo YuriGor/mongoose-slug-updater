@@ -103,6 +103,22 @@ const ParentSchema = new mongoose.Schema({
   ],
 });
 
+const InlineSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, unique: true, slug: 'title' },
+  list: { type: Array },
+  child: {
+    title: { type: String },
+    slug: { type: String, slug: 'title' },
+  },
+  children: [
+    {
+      title: { type: String },
+      slug: { type: String, slug: 'title' },
+    },
+  ],
+});
+
 const ShortId = mongoose.model('ResourceShortId', ResourceShortId);
 const Counter = mongoose.model('ResourceCounter', ResourceCounter);
 const GroupedUniqueCounter = mongoose.model(
@@ -117,6 +133,7 @@ const Permanent = mongoose.model('ResourcePermanent', ResourcePermanent);
 const Hook = mongoose.model('HooksSchema', HooksSchema);
 const Child = mongoose.model('ChildSchema', ChildSchema);
 const Parent = mongoose.model('ParentSchema', ParentSchema);
+const Inline = mongoose.model('InlineSchema', InlineSchema);
 
 module.exports = {
   options,
@@ -130,4 +147,5 @@ module.exports = {
   Hook,
   Child,
   Parent,
+  Inline,
 };
