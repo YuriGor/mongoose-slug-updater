@@ -21,6 +21,7 @@ describe('findOneAndUpdate', function() {
   });
 
   it('Update not watcher field shortId', async () => {
+    // console.log(' --- findOneAndUpdate --- ');
     let doc = await ShortId.findOneAndUpdate(
       { title: 'impossible' },
       {
@@ -30,6 +31,7 @@ describe('findOneAndUpdate', function() {
       },
       { upsert: true, new: true }
     );
+    // console.log(doc);
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
     let { _id } = doc;

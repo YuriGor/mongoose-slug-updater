@@ -5,16 +5,16 @@ const slugify = require('speakingurl');
 
 // https://www.youtube.com/watch?v=--UPSacwPDA
 const text = [
-  `Am I wrong, fallin' in love with you,`,
-  `tell me am I wrong, well, fallin' in love with you`,
-  `While your other man was out there,`,
-  `cheatin' and lyin', steppin' all over you`,
+  `#0 Am I wrong, fallin' in love with you,`,
+  `#1 tell me am I wrong, well, fallin' in love with you`,
+  `#2 While your other man was out there,`,
+  `#3 cheatin' and lyin', steppin' all over you`,
 
-  `Uh, sweet thing`,
-  `Tell me am I wrong, holdin' on to you so tight,`,
-  `Tell me, tell me, am I wrong, holdin' on to you so tight`,
-  `If your other man come to claim you,`,
-  `he'd better be ready, ready for a long long fight`,
+  `#4 Uh, sweet thing`,
+  `#5 Tell me am I wrong, holdin' on to you so tight,`,
+  `#6 Tell me, tell me, am I wrong, holdin' on to you so tight`,
+  `#7 If your other man come to claim you,`,
+  `#8 he'd better be ready, ready for a long long fight`,
 ];
 
 const slug = text.map(t => slugify(t, options));
