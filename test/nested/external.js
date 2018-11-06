@@ -195,5 +195,139 @@ describe('Inline Docs', function() {
           .and.equal(tellme.getSlug(0));
       }
     }
+
+    doc.title = tellme.getText(8);
+    doc.child.title = tellme.getText(7);
+    doc.child.subChild.title = tellme.getText(6);
+
+    for (let i = 0; i < 9; i++) {
+      doc.child.subChildren[i].title = tellme.getText(8-i);
+    }
+
+    for (let i = 0; i < 9; i++) {
+      doc.children[i].title = tellme.getText(i);
+      doc.children[i].subChild.title = tellme.getText(8-i);
+      for(let j =0;j<9;j++){
+        doc.children[i].subChildren[j].title = tellme.getText(8-j);
+      }
+    }
+
+    await doc.save();
+
+    doc.should.have.property('slug').and.equal(tellme.getSlug(8));
+    doc.should.have.property('absoluteSlug').and.equal(tellme.getSlug(8));
+    doc.should.have.property('childSlug').and.equal(tellme.getSlug(7));
+    doc.should.have.property('absoluteChildSlug').and.equal(tellme.getSlug(7));
+    doc.should.have.property('subChildSlug').and.equal(tellme.getSlug(6));
+    doc.should.have.property('childrenSlug0').and.equal(tellme.getSlug(0));
+    doc.should.have.property('childrenSlug4').and.equal(tellme.getSlug(4));
+    doc.should.have.property('subChildrenSlug3').and.equal(tellme.getSlug(5));
+    doc.should.have.property('subChildrenSlug7').and.equal(tellme.getSlug(1));
+
+    doc.should.have.nested.property('child.title').and.equal(tellme.getText(7));
+    doc.should.have.nested.property('child.slug').and.equal(tellme.getSlug(7));
+    doc.should.have.nested
+      .property('child.subChildSlug')
+      .and.equal(tellme.getSlug(6));
+    doc.should.have.nested
+      .property('child.absoluteSlug')
+      .and.equal(tellme.getSlug(7));
+    doc.should.have.nested
+      .property('child.absoluteRootSlug')
+      .and.equal(tellme.getSlug(8));
+    doc.should.have.nested
+      .property('child.relativeParentSlug')
+      .and.equal(tellme.getSlug(8));
+    doc.should.have.nested
+      .property('child.subChildrenSlug2')
+      .and.equal(tellme.getSlug(6));
+    doc.should.have.nested
+      .property('child.subChildrenSlug3')
+      .and.equal(tellme.getSlug(5));
+
+    doc.should.have.nested
+      .property('child.subChild.title')
+      .and.equal(tellme.getText(6));
+    doc.should.have.nested
+      .property('child.subChild.slug')
+      .and.equal(tellme.getSlug(6));
+    doc.should.have.nested
+      .property('child.subChild.absoluteRootSlug')
+      .and.equal(tellme.getSlug(8));
+    doc.should.have.nested
+      .property('child.subChild.absoluteChildSlug')
+      .and.equal(tellme.getSlug(7));
+    doc.should.have.nested
+      .property('child.subChild.relativeParentSlug')
+      .and.equal(tellme.getSlug(7));
+    doc.should.have.nested
+      .property('child.subChild.relativeGrandParentSlug')
+      .and.equal(tellme.getSlug(8));
+
+    for (let i = 0; i < 9; i++) {
+      doc.should.have.nested
+        .property(`child.subChildren.${i}.title`)
+        .and.equal(tellme.getText(8-i));
+      doc.should.have.nested
+        .property(`child.subChildren.${i}.slug`)
+        .and.equal(tellme.getSlug(8-i));
+      doc.should.have.nested
+        .property(`child.subChildren.${i}.absoluteRootSlug`)
+        .and.equal(tellme.getSlug(8));
+      doc.should.have.nested
+        .property(`child.subChildren.${i}.absoluteChildSlug`)
+        .and.equal(tellme.getSlug(7));
+      doc.should.have.nested
+        .property(`child.subChildren.${i}.relativeParentSlug`)
+        .and.equal(tellme.getSlug(7));
+      doc.should.have.nested
+        .property(`child.subChildren.${i}.relativeGrandParentSlug`)
+        .and.equal(tellme.getSlug(8));
+    }
+
+    for (let i = 0; i < 9; i++) {
+      doc.should.have.nested
+        .property(`children.${i}.slug`)
+        .and.equal(tellme.getSlug(i));
+      doc.should.have.nested
+        .property(`children.${i}.subChildSlug`)
+        .and.equal(tellme.getSlug(8-i));
+      doc.should.have.nested
+        .property(`children.${i}.absoluteSlug`)
+        .and.equal(tellme.getSlug(7));
+      doc.should.have.nested
+        .property(`children.${i}.absoluteRootSlug`)
+        .and.equal(tellme.getSlug(8));
+      doc.should.have.nested
+        .property(`children.${i}.relativeParentSlug`)
+        .and.equal(tellme.getSlug(8));
+      doc.should.have.nested
+        .property(`children.${i}.subChildrenSlug2`)
+        .and.equal(tellme.getSlug(6));
+      doc.should.have.nested
+        .property(`children.${i}.subChildrenSlug3`)
+        .and.equal(tellme.getSlug(5));
+
+      for (let j = 0; j < 9; j++) {
+        doc.should.have.nested
+          .property(`children.${i}.subChildren.${j}.title`)
+          .and.equal(tellme.getText(8-j));
+        doc.should.have.nested
+          .property(`children.${i}.subChildren.${j}.slug`)
+          .and.equal(tellme.getSlug(8-j));
+        doc.should.have.nested
+          .property(`children.${i}.subChildren.${j}.absoluteRootSlug`)
+          .and.equal(tellme.getSlug(8));
+        doc.should.have.nested
+          .property(`children.${i}.subChildren.${j}.absoluteChildSlug`)
+          .and.equal(tellme.getSlug(7));
+        doc.should.have.nested
+          .property(`children.${i}.subChildren.${j}.relativeParentSlug`)
+          .and.equal(tellme.getSlug(i));
+        doc.should.have.nested
+          .property(`children.${i}.subChildren.${j}.relativeGrandParentSlug`)
+          .and.equal(tellme.getSlug(8));
+      }
+    }
   });
 });
