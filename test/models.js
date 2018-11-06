@@ -85,27 +85,56 @@ const HooksSchema = new mongoose.Schema({
   },
 });
 
+const SimpleChildSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, slug: 'title' },
+});
+
+const SimpleParentSchema = new mongoose.Schema({
+  simpleParent: { type: String },
+  title: { type: String },
+  slug: { type: String, slug: 'title' },
+  child: SimpleChildSchema,
+  children: [SimpleChildSchema],
+});
+
+const SubChildSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, slug: 'title' },
+  absoluteRootSlug: { type: String, slug: '/title' },
+  absoluteChildSlug: { type: String, slug: '/child.title' },
+  relativeParentSlug: { type: String, slug: ':title' },
+  relativeGrandParentSlug: { type: String, slug: '::title' },
+});
+
 const ChildSchema = new mongoose.Schema({
   title: { type: String },
-  slug: { type: String, /*unique: true,*/ slug: 'title' },
+  subChild: SubChildSchema,
+  subChildren: [SubChildSchema],
+
+  slug: { type: String, slug: 'title' },
+  subChildSlug: { type: String, slug: 'subChild.title' },
+  absoluteSlug: { type: String, slug: '/child.title' },
+  absoluteRootSlug: { type: String, slug: '/title' },
+  relativeParentSlug: { type: String, slug: ':title' },
+  subChildrenSlug2: { type: String, slug: 'subChildren.2.title' },
+  subChildrenSlug3: { type: String, slug: 'subChildren.3.title' },
 });
 
 const ParentSchema = new mongoose.Schema({
   title: { type: String },
-  slug: { type: String, unique: true, slug: 'title' },
-  list: { type: Array },
-  singleChild: ChildSchema,
+  child: ChildSchema,
   children: [ChildSchema],
-  inlineChild: {
-    title: { type: String },
-    slug: { type: String, slug: 'title' },
-  },
-  inlineChildren: [
-    {
-      title: { type: String },
-      slug: { type: String, slug: 'title' },
-    },
-  ],
+
+  slug: { type: String, slug: 'title' },
+  absoluteSlug: { type: String, slug: '/title' },
+  childSlug: { type: String, slug: 'child.title' },
+  absoluteChildSlug: { type: String, slug: '/child.title' },
+  subChildSlug: { type: String, slug: 'child.subChild.title' },
+  childrenSlug0: { type: String, slug: 'children.0.title' },
+  childrenSlug4: { type: String, slug: 'children.4.title' },
+  subChildrenSlug3: { type: String, slug: 'children.7.subChildren.3.title' },
+  subChildrenSlug7: { type: String, slug: 'children.3.subChildren.7.title' },
 });
 
 const InlineSchema = new mongoose.Schema({
@@ -119,8 +148,14 @@ const InlineSchema = new mongoose.Schema({
   childrenSlug4: { type: String, slug: 'children.4.title' },
   subChildrenSlug3: { type: String, slug: 'children.0.subChildren.3.title' },
   subChildrenSlug7: { type: String, slug: 'children.0.subChildren.7.title' },
-  subChildrenSlug5SubChild: { type: String, slug: 'children.0.subChildren.5.subChild.title' },
-  subChildrenSlug2SubChild: { type: String, slug: 'children.0.subChildren.2.subChild.title' },
+  subChildrenSlug5SubChild: {
+    type: String,
+    slug: 'children.0.subChildren.5.subChild.title',
+  },
+  subChildrenSlug2SubChild: {
+    type: String,
+    slug: 'children.0.subChildren.2.subChild.title',
+  },
   child: {
     title: { type: String },
     slug: { type: String, slug: 'title' },
@@ -152,14 +187,17 @@ const InlineSchema = new mongoose.Schema({
         relativeParentSlug: { type: String, slug: ':title' },
         relativeGrandParentSlug: { type: String, slug: '::title' },
       },
-      subChildren:[
+      subChildren: [
         {
           title: { type: String },
           slug: { type: String, slug: 'title' },
           absoluteRootSlug: { type: String, slug: '/title' },
           absoluteChildSlug: { type: String, slug: '/child.title' },
           relativeRootSlug: { type: String, slug: '::title' },
-          absoluteSiblingSlug: { type: String, slug: '/children.0.subChildren.5.title' },
+          absoluteSiblingSlug: {
+            type: String,
+            slug: '/children.0.subChildren.5.title',
+          },
           relativeSiblingSlug: { type: String, slug: ':subChildren.6.title' },
           subChild: {
             title: { type: String },
@@ -169,8 +207,8 @@ const InlineSchema = new mongoose.Schema({
             relativeParentSlug: { type: String, slug: ':title' },
             relativeGrandParentSlug: { type: String, slug: '::title' },
           },
-        }
-      ]
+        },
+      ],
     },
   ],
 });
@@ -203,10 +241,13 @@ const GroupedUniqueShortId = mongoose.model(
 );
 const Permanent = mongoose.model('ResourcePermanent', ResourcePermanent);
 const Hook = mongoose.model('HooksSchema', HooksSchema);
+const SubChild = mongoose.model('SubChildSchema', SubChildSchema);
 const Child = mongoose.model('ChildSchema', ChildSchema);
 const Parent = mongoose.model('ParentSchema', ParentSchema);
 const Inline = mongoose.model('InlineSchema', InlineSchema);
 const InlineUnique = mongoose.model('InlineUniqueSchema', InlineUniqueSchema);
+const SimpleChild = mongoose.model('SimpleChildSchema', SimpleChildSchema);
+const SimpleParent = mongoose.model('SimpleParentSchema', SimpleParentSchema);
 
 module.exports = {
   options,
@@ -218,6 +259,9 @@ module.exports = {
   GroupedUniqueShortId,
   Permanent,
   Hook,
+  SubChild,
+  SimpleChild,
+  SimpleParent,
   Child,
   Parent,
   Inline,

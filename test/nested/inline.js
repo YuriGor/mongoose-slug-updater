@@ -9,7 +9,6 @@ const { nIterations, Inline } = require('./../models');
 
 const tellme = require('./../tellme');
 /* Tests */
-var resource = {};
 
 describe('Inline Docs', function() {
   beforeEach(async () => {
