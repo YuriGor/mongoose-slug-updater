@@ -263,8 +263,11 @@ ResourcePermanent = new mongoose.Schema({
 Nested docs and arrays declared inline right in the scheme or as a nested schemas declared separately are also supported.
 For now only `save` method supported. `update***` methods family implementation is in progress.
 Non-unique nested slugs are currently implemented. Unique nested slugs are coming soon.
+
 Slug fields can be declared as relative or absolute(starting with slash) path to any point of current document.
+
 Since MongoDB uses dot path notation, colon `:` symbol used for relative paths as a reference to the parent, same as double dot `..` for file system paths.
+
 Example of scheme with inline nested docs:
 ```js
 const InlineSchema = new mongoose.Schema({
