@@ -1,7 +1,7 @@
 {
   "name": "mongoose-slug-updater",
   "version": "2.2.0",
-  "description": "Mongoose plugin to create and update slugs and unique slugs in any field",
+  "description": "Mongoose plugin to create and update slugs and unique slugs in any field, nested too.",
   "main": "index.js",
   "directories": {
     "lib": "./lib"
@@ -34,7 +34,8 @@
     "clean url",
     "static url",
     "nice url",
-    "update slug"
+    "update slug",
+    "nested slug"
   ],
   "author": "Yuri Gor (http://yurigor.com)",
   "contributors": [
