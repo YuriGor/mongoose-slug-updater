@@ -1,7 +1,7 @@
 'use strict';
 const mongoose = require('mongoose');
 const slug_padding_size = 4,
-  nIterations = 100;
+  nIterations = 15;
 const slugGenerator = require('../.');
 const options = {
   separator: '-',
@@ -133,6 +133,21 @@ const ParentSchema = new mongoose.Schema({
   childrenSlug4: { type: String, slug: 'children.4.title' },
   subChildrenSlug3: { type: String, slug: 'children.7.subChildren.3.title' },
   subChildrenSlug7: { type: String, slug: 'children.3.subChildren.7.title' },
+});
+
+const SimpleInlineSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, slug: 'title' },
+  child:{
+    title: { type: String },
+    slug: { type: String, slug: 'title' }
+  },
+  children:[
+    {
+      title: { type: String },
+      slug: { type: String, slug: 'title' }
+    }
+  ]
 });
 
 const InlineSchema = new mongoose.Schema({
@@ -284,6 +299,7 @@ const SubChild = mongoose.model('SubChildSchema', SubChildSchema);
 const Child = mongoose.model('ChildSchema', ChildSchema);
 const Parent = mongoose.model('ParentSchema', ParentSchema);
 const Inline = mongoose.model('InlineSchema', InlineSchema);
+const SimpleInline = mongoose.model('SimpleInlineSchema', SimpleInlineSchema);
 const InlineUnique = mongoose.model('InlineUniqueSchema', InlineUniqueSchema);
 const SimpleChild = mongoose.model('SimpleChildSchema', SimpleChildSchema);
 const SimpleParent = mongoose.model('SimpleParentSchema', SimpleParentSchema);
@@ -304,5 +320,6 @@ module.exports = {
   Child,
   Parent,
   Inline,
+  SimpleInline,
   InlineUnique,
 };

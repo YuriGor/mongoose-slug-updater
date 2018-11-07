@@ -52,16 +52,16 @@
     "node": ">= 8.3.0"
   },
   "dependencies": {
-    "deepdash": "^1.0.1",
-    "shortid": "^2.2.4",
+    "deepdash": "^1.3.2",
+    "shortid": "^2.2.14",
     "speakingurl": "^7.0.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "*",
+    "eslint": "^5.8.0",
     "mocha": "^5.2.0",
-    "mongodb-memory-server": "^2.6.2",
-    "mongoose": "^5.3.7",
-    "nodemon": "^1.18.5"
+    "mongodb-memory-server": "^2.7.0",
+    "mongoose": "^5.3.10",
+    "nodemon": "^1.18.6"
   }
 }

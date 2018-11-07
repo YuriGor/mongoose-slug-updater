@@ -2,6 +2,7 @@
 
 Mongoose plugin for creating and updating slugs based on mongoose schema fields.
 Operations `save`, `update`, `updateOne`, `updateMany` and `findOneAndUpdate` are supported.
+Update operators support coming soon.
 For example you can create a slug based on a document's title and author's name: _my-post-title-slim-shady_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
 
 ## Installation
@@ -261,7 +262,7 @@ ResourcePermanent = new mongoose.Schema({
 
 ### Nested docs. Relative and absolute paths.
 Nested docs and arrays declared inline right in the scheme or as a nested schemas declared separately are also supported.
-For now only `save` method supported. `update***` methods family implementation is in progress.
+
 Non-unique nested slugs are currently implemented. Unique nested slugs are coming soon.
 
 Slug fields can be declared as relative or absolute(starting with slash) path to any point of current document.
