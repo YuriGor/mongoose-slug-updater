@@ -1,8 +1,8 @@
 # mongoose-slug-updater
 
-Mongoose plugin for creating and updating slugs based on mongoose schema fields.
-Operations `save`, `update`, `updateOne`, `updateMany` and `findOneAndUpdate` are supported both for creation and modifying.
-Nested documents and arrays supported too with relative/absolute path to any field of the document.
+Mongoose plugin for creating and updating slugs based on mongoose schema fields.<br>
+Operations `save`, `update`, `updateOne`, `updateMany` and `findOneAndUpdate` are supported both for creation and modifying.<br>
+Nested documents and arrays supported too with relative/absolute path to any field of the document.<br>
 For example you can create a slug based on a document's title and author's name: _my-post-title-slim-shady_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
 
 Update operators support and nested unique slugs coming soon.
@@ -151,13 +151,14 @@ mongoose.model('Resource').create({
 }) // slug -> 'am-i-wrong-fallin-in-love-with-you-0002'
 ```
 
-If you don't want to define your field as unique for some reasons, but still need slug to be unique,
-you can use `unique_slug:true` option instead of `unique`.
+If you don't want to define your field as unique for some reasons, but still need slug to be unique,<br>
+you can use `unique_slug:true` option instead of `unique`.<br>
 This option will not cause index creation, but still will be considered by the plugin.
 
 ### Unique slug within a group
 
-Sometimes you only want slugs to be unique within a specific group. This is done with the `uniqueGroup` property which is an array of fields to group by:
+Sometimes you only want slugs to be unique within a specific group.<br>
+This is done with the `uniqueGroup` property which is an array of fields to group by:
 
 **example unique per group (using the field named 'group')**
 
@@ -234,12 +235,12 @@ const HooksSchema = new mongoose.Schema({
 
 Note, that flags will affect both creation and updating of documents,
 so if you disabled `save` and still want slug to be generated initially,
-use `upsert` option of `update***` methods.
+use `upsert` option of `update***` methods.<br>
 On `update` and `updateMany` multiply affected records also handled, but be careful with performance,
-because one-by-one iteration over affected documents may happen in case of unique slugs.
-In this case `_id` field is required.
-For `update*` family of operations additional queries may be performed, to retrieve data missing in the query.
-For example if compound slug was affected by this update.
+because one-by-one iteration over affected documents may happen in case of unique slugs.<br>
+In this case `_id` field is required.<br>
+For `update*` family of operations additional queries may be performed, to retrieve data missing in the query.<br>
+For example if compound slug was affected by this update.<br>
 So if you already have necessary data - it's better for performance to specify all the fields listed in the compound slug and old slug value in update query.
 
 #### `permanent` option
