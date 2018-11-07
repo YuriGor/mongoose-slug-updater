@@ -2,9 +2,10 @@
 
 Mongoose plugin for creating and updating slugs based on mongoose schema fields.
 Operations `save`, `update`, `updateOne`, `updateMany` and `findOneAndUpdate` are supported both for creation and modifying.
-Update operators support coming soon.
 Nested documents and arrays supported too with relative/absolute path to any field of the document.
 For example you can create a slug based on a document's title and author's name: _my-post-title-slim-shady_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
+
+Update operators support and nested unique slugs coming soon.
 
 ## Installation
 

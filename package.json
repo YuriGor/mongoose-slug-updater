@@ -1,7 +1,7 @@
 {
   "name": "mongoose-slug-updater",
   "version": "2.2.0",
-  "description": "Mongoose plugin to create and update slugs and unique slugs in any field, nested too.",
+  "description": "Mongoose plugin to create and update slugs and unique slugs in any field, nested too. Create, Save, Update, FindAndUpdate operations supported.",
   "main": "index.js",
   "directories": {
     "lib": "./lib"
