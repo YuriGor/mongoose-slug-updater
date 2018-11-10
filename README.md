@@ -2,10 +2,11 @@
 
 Mongoose plugin for creating and updating slugs based on mongoose schema fields.<br>
 Operations `save`, `update`, `updateOne`, `updateMany` and `findOneAndUpdate` are supported both for creation and modifying.<br>
-Nested documents and arrays supported too with relative/absolute path to any field of the document.<br>
+Nested documents and arrays are supported too with relative/absolute path to any field of the document.<br>
+$set deep paths to nested docs and arrays works too, but without other update operators yet.
 For example you can create a slug based on a document's title and author's name: _my-post-title-slim-shady_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
 
-Update operators support and nested unique slugs coming soon.
+Update operators support and unique mode for nested slugs are coming soon.
 
 ## Installation
 
@@ -430,6 +431,24 @@ const ParentSchema = new mongoose.Schema({
   subChildrenSlug7: { type: String, slug: 'children.3.subChildren.7.title' },
 });
 ```
+
+#### Updating by deep path via $set operator
+
+This will work too:
+```js
+  await SimpleInline.findOneAndUpdate(
+    {/*some criteria*/},
+    {
+      $set: {
+        title: 'New root title',
+        'child.title': 'New nested title',
+        'children.2.title': 'New title for the 3d item of nested array',
+      },
+    }
+  );
+```
+All the slugs which depend on modified titles will be found and regenerated.
+
 ### Choose your own options
 
 You can change any options adding to the plugin
