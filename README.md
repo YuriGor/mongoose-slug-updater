@@ -484,4 +484,12 @@ Merged and fixed `uniqueGroup` feature by [rickogden](https://github.com/rickogd
 
 `update`, `updateOne`, `updateMany` and `findOneAndUpdate` operations support implemented.
 
+Nested docs and arrays support implemented for non-unique slugs.
+
+Absolute and relative paths added.
+
+Updating with $set operator and deep paths now works too.
+
+All the update operators and unique nested slugs will be implemented soon.
+
 Plugin rewritten with modern js and a lot of tests were added.
