@@ -120,16 +120,6 @@ mongoose.model('Resource').create({
     subtitle: "tell me am I wrong, well, fallin' in love with you",
 }); // slug -> 'am-i-wrong-fallin-in-love-with-you-NJeskEPb5e'
 ```
-`force_id` option will append shortId even no duplicates were found.<br>
-This is useful for applications with high chance of concurrent modification of unique fields.<br>
-Check for conflict made by plugin is not atomic with subsequent insert/update operation,<br>
-so there is a possibility of external data change in the moment between check and write.<br>
-If this happened, mongo will throw unique index violation error.<br>
-Chances of such case higher for counter unique mode, but with shortId this is possible too.<br>
-You can just retry operation, so plugin will check collection again and regenerate correct unique slug.<br>
-Or you can set `force_id` option - this will solve the problem completely.
-
-In most cases write operations not so frequent to care about possible conflicts.
 
 Alternatively you can modify this behaviour and instead of appending a random string, an incremental counter will be used. For that to happen, you must use the parameter _slug_padding_size_ specifying the total length of the counter:
 
@@ -165,6 +155,19 @@ mongoose.model('Resource').create({
 If you don't want to define your field as unique for some reasons, but still need slug to be unique,<br>
 you can use `unique_slug:true` option instead of `unique`.<br>
 This option will not cause index creation, but still will be considered by the plugin.
+
+`force_id` option will append shortId even if no duplicates were found.<br>
+This is useful for applications with high chance of concurrent modification of unique fields.<br>
+Check for conflict made by plugin is not atomic with subsequent insert/update operation,<br>
+so there is a possibility of external data change in the moment between check and write.<br>
+If this happened, mongo will throw unique index violation error.<br>
+Chances of such case higher for counter unique mode, but with shortId this is possible too.<br>
+You can just retry operation, so plugin will check collection again and regenerate correct unique slug.<br>
+Or you can set `force_id` option - this will solve the problem completely, but you will pay for this by less readabilty of your slugs, because they will *always* be appended with random string.
+
+In most cases write operations not so frequent to care about possible conflicts.
+
+note: `force_id` option will also overwite `unique` to the `true`, and `slug_padding_size` option will be ignored.
 
 ### Unique slug within a group
 
