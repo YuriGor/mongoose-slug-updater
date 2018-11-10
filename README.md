@@ -159,7 +159,7 @@ This option will not cause index creation, but still will be considered by the p
 `force_id` option will append shortId even if no duplicates were found.<br>
 This is useful for applications with high chance of concurrent modification of unique fields.<br>
 Check for conflict made by plugin is not atomic with subsequent insert/update operation,<br>
-so there is a possibility of external data change in the moment between check and write.<br>
+so there is a possibility of external change of data in the moment between check and write.<br>
 If this happened, mongo will throw unique index violation error.<br>
 Chances of such case higher for counter unique mode, but with shortId this is possible too.<br>
 You can just retry operation, so plugin will check collection again and regenerate correct unique slug.<br>
