@@ -100,7 +100,7 @@ var mongoose = require('mongoose'),
 });
 ```
 
-If _unique_ is set, the plugin searches in the mongo database, and if the slug already exists in the collection, it appends to the slug a separator (default: "-") and a random string (generated with the shortid module).
+If `unique` or `unique_slug` is set, the plugin searches in the mongo database, and if the slug already exists in the collection, it appends to the slug a separator (default: "-") and a random string (generated with the shortid module).
 
 **example random**
 
@@ -120,6 +120,16 @@ mongoose.model('Resource').create({
     subtitle: "tell me am I wrong, well, fallin' in love with you",
 }); // slug -> 'am-i-wrong-fallin-in-love-with-you-NJeskEPb5e'
 ```
+`force_id` option will append shortId even no duplicates were found.<br>
+This is useful for applications with high chance of concurrent modification of unique fields.<br>
+Check for conflict made by plugin is not atomic with subsequent insert/update operation,<br>
+so there is a possibility of external data change in the moment between check and write.<br>
+If this happened, mongo will throw unique index violation error.<br>
+Chances of such case higher for counter unique mode, but with shortId this is possible too.<br>
+You can just retry operation, so plugin will check collection again and regenerate correct unique slug.<br>
+Or you can set `force_id` option - this will solve the problem completely.
+
+In most cases write operations not so frequent to care about possible conflicts.
 
 Alternatively you can modify this behaviour and instead of appending a random string, an incremental counter will be used. For that to happen, you must use the parameter _slug_padding_size_ specifying the total length of the counter:
 

@@ -21,6 +21,7 @@ const ResourceShortId = new mongoose.Schema({
   otherField: { type: String },
   slug: { type: String, slug: ['title', 'subtitle'] },
   uniqueSlug: { type: String, unique: true, slug: 'title' },
+  forcedSlug: { type:String, slug: ['subtitle'], force_id:true }
 });
 
 const ResourceCounter = new mongoose.Schema({

@@ -30,6 +30,10 @@ describe('updateOne', function() {
       otherField: tellme.getText(1),
     });
     let { _id, slug, uniqueSlug } = res;
+    res.should.have
+      .property('forcedSlug')
+      .match(tellme.getShortRegex(1))
+      .and.not.equal(tellme.getSlug(1));
     let mdf = {
       otherField: tellme.getText(1),
     };
@@ -132,6 +136,10 @@ describe('updateOne', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
+    res.should.have
+      .property('forcedSlug')
+      .match(tellme.getShortRegex(1))
+      .and.not.equal(tellme.getSlug(1));
     // console.debug('created doc', res);
     let { _id, slug, uniqueSlug } = res;
     let mdf = {
@@ -148,6 +156,11 @@ describe('updateOne', function() {
     editedDoc.should.have
       .property('uniqueSlug')
       .and.equal(tellme.getSlug(0));
+
+    editedDoc.should.have
+      .property('forcedSlug')
+      .match(tellme.getShortRegex(3))
+      .and.not.equal(tellme.getSlug(3));
     mdf = {
       subtitle: tellme.getText(4),
     };
@@ -161,6 +174,10 @@ describe('updateOne', function() {
     editedDoc.should.have
       .property('uniqueSlug')
       .and.equal(tellme.getSlug(0));
+    editedDoc.should.have
+      .property('forcedSlug')
+      .match(tellme.getShortRegex(4))
+      .and.not.equal(tellme.getSlug(4));
   });
 
   it("Update watcher fields to the same values and check slugs wasn't changed", async () => {

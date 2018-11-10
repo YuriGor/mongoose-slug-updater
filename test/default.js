@@ -33,6 +33,11 @@ describe('Default plugin usage', function() {
       .property('slug')
       .and.equal(tellme.getSlug(0,1));
 
+    resource.should.have
+      .property('forcedSlug')
+      .match(tellme.getShortRegex(1))
+      .and.not.equal(tellme.getSlug(1));
+
     assert.equal(-1, uniqueSlugs.indexOf(resource.uniqueSlug));
 
     uniqueSlugs.push(resource.uniqueSlug);
