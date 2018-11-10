@@ -10,7 +10,7 @@ const {
   slug_padding_size,
   GroupedUniqueCounter,
   GroupedUniqueShortId,
-} = require("./models");
+} = require("./model");
 
 const tellme = require('./tellme');
 /* Tests */

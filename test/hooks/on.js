@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 
-const { Hook } = require('./../models');
+const { Hook } = require('./../model');
 
 const tellme = require('./../tellme');
 

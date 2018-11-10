@@ -1,6 +1,6 @@
 'use strict';
 const _ = require('lodash');
-const { options, slug_padding_size } = require('./models');
+const { options, slug_padding_size } = require('./options');
 const slugify = require('speakingurl');
 
 // https://www.youtube.com/watch?v=--UPSacwPDA

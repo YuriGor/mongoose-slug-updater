@@ -8,7 +8,7 @@ const mongoose = require('mongoose'),
 const {
   ShortId,
   Counter
-} = require("./../models");
+} = require("./../model");
 
 const tellme = require('./../tellme');
 

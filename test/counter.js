@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 
-const { nIterations, slug_padding_size, Counter } = require('./models');
+const { nIterations, slug_padding_size, Counter } = require('./model');
 
 const tellme = require('./tellme');
 /* Tests */
@@ -27,15 +27,38 @@ describe('Counter plugin usage', function() {
     });
     resource = doc;
 
-    doc.should.have
-      .property('slug')
-      .and.equal(
-        tellme.getSlug(0,1)
-      );
-    doc.should.have
-      .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+    doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
+    doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
   });
+
+  // it('Create several new resources concurrently', async () => {
+  //   return Promise.all([
+  //     Counter.create({
+  //       title: tellme.getText(0),
+  //       subtitle: tellme.getText(1),
+  //     }),
+  //     Counter.create({
+  //       title: tellme.getText(0),
+  //       subtitle: tellme.getText(1),
+  //     }),
+  //     Counter.create({
+  //       title: tellme.getText(0),
+  //       subtitle: tellme.getText(1),
+  //     }),
+  //     Counter.create({
+  //       title: tellme.getText(0),
+  //       subtitle: tellme.getText(1),
+  //     }),
+  //   ]).then((docs)=>{
+  //     for (let i = 1; i <= 4; i++) {
+  //       let doc = docs[i];
+  //       doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
+  //       doc.should.have
+  //         .property('uniqueSlug')
+  //         .and.equal(tellme.getCounterSlug(0, i));
+  //     }
+  //   });
+  // });
 
   it(
     'Create ' + nIterations + ' resources and check Slug and UniqueSlug',
@@ -58,28 +81,16 @@ describe('Counter plugin usage', function() {
       title: tellme.getText(2),
       subtitle: tellme.getText(3),
     });
-    doc.should.have
-      .property('slug')
-      .and.equal(
-        tellme.getSlug(2,3)
-      );
-    doc.should.have
-      .property('uniqueSlug')
-      .and.equal(tellme.getSlug(2));
+    doc.should.have.property('slug').and.equal(tellme.getSlug(2, 3));
+    doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(2));
   });
 
   it('Upsert a "watcher" element in an resource', async () => {
     resource.title = tellme.getText(4);
     let doc = await resource.save();
     doc.should.have.property('title', tellme.getText(4));
-    doc.should.have.property(
-      'subtitle',
-      tellme.getText(1)
-    );
-    doc.should.have.property(
-      'slug',
-      tellme.getSlug(4,1)
-    );
+    doc.should.have.property('subtitle', tellme.getText(1));
+    doc.should.have.property('slug', tellme.getSlug(4, 1));
     doc.should.have.property('uniqueSlug', tellme.getSlug(4));
   });
 
@@ -87,14 +98,8 @@ describe('Counter plugin usage', function() {
     resource.description = tellme.getText(5);
     let doc = await resource.save();
     doc.should.have.property('title', tellme.getText(4));
-    doc.should.have.property(
-      'subtitle',
-      tellme.getText(1)
-    );
-    doc.should.have.property(
-      'slug',
-      tellme.getSlug(4,1)
-    );
+    doc.should.have.property('subtitle', tellme.getText(1));
+    doc.should.have.property('slug', tellme.getSlug(4, 1));
     doc.should.have.property('uniqueSlug', tellme.getSlug(4));
   });
 
@@ -102,14 +107,8 @@ describe('Counter plugin usage', function() {
     resource.title = tellme.getSlug(4);
     let doc = await resource.save();
     doc.should.have.property('title', tellme.getSlug(4));
-    doc.should.have.property(
-      'subtitle',
-      tellme.getText(1)
-    );
-    doc.should.have.property(
-      'slug',
-      tellme.getSlug(4,1)
-    );
+    doc.should.have.property('subtitle', tellme.getText(1));
+    doc.should.have.property('slug', tellme.getSlug(4, 1));
     doc.should.have.property('uniqueSlug', tellme.getSlug(4));
   });
 });
@@ -126,7 +125,7 @@ describe('Counter plugin usage to check titles including other titles', function
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
-    doc.should.have.property('slug').and.equal(tellme.getSlug(0,1));
+    doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
   });
   it('Create a second resource which has a title part of first resources title', async () => {
@@ -134,7 +133,7 @@ describe('Counter plugin usage to check titles including other titles', function
       title: tellme.getText(2),
       subtitle: tellme.getText(1),
     });
-    doc.should.have.property('slug').and.equal(tellme.getSlug(2,1));
+    doc.should.have.property('slug').and.equal(tellme.getSlug(2, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(2));
   });
 });

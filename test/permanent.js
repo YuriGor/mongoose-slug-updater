@@ -7,7 +7,7 @@ const mongoose = require('mongoose'),
 
 const {
   Permanent
-} = require("./models");
+} = require("./model");
 
 const tellme = require('./tellme');
 /* Tests */

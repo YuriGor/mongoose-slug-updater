@@ -1,4 +1,4 @@
 --bail
 --file test/setup.js
---file test/models.js
+--file test/model/index.js
 --recursive

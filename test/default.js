@@ -6,7 +6,7 @@ const
 const {
   nIterations,
   ShortId
-} = require("./models");
+} = require("./model");
 
 const tellme = require("./tellme");
 

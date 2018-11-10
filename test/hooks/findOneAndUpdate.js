@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 
-const { ShortId, Counter } = require('./../models');
+const { ShortId, Counter } = require('./../model');
 
 const tellme = require('./../tellme');
 
