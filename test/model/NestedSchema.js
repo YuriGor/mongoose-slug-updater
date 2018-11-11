@@ -5,14 +5,15 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 const tellme = require('./../tellme');
+const { options, slug_padding_size, nIterations } = require('./../options');
 
 const SubChildSchema = new mongoose.Schema({
   title: { type: String },
   slug: { type: String, slug: 'title' },
   absoluteRootSlug: { type: String, slug: '/title' },
   absoluteChildSlug: { type: String, slug: '/child.title' },
-  relativeParentSlug: { type: String, slug: ':title' },// child's title
-  relativeGrandParentSlug: { type: String, slug: '::title' },//parent's title
+  relativeParentSlug: { type: String, slug: ':title' }, // child's title
+  relativeGrandParentSlug: { type: String, slug: '::title' }, //parent's title
 });
 
 const ChildSchema = new mongoose.Schema({
@@ -23,7 +24,7 @@ const ChildSchema = new mongoose.Schema({
   subChildSlug: { type: String, slug: 'subChild.title' },
   absoluteSlug: { type: String, slug: '/child.title' },
   absoluteRootSlug: { type: String, slug: '/title' },
-  relativeParentSlug: { type: String, slug: ':title' },//Parent
+  relativeParentSlug: { type: String, slug: ':title' }, //Parent
   subChildrenSlug2: { type: String, slug: 'subChildren.2.title' },
   subChildrenSlug3: { type: String, slug: 'subChildren.3.title' },
 });
@@ -197,7 +198,7 @@ ParentSchema.statics.testNewDoc = function(doc) {
   }
 };
 
-ParentSchema.statics.changeNewDoc = function(doc) {
+ParentSchema.statics.changeDoc = function(doc) {
   let changed = {
     title: tellme.getText(8),
     child: {
@@ -278,6 +279,7 @@ ParentSchema.statics.testChangedDoc = function(doc) {
     doc.should.have.nested
       .property(`child.subChildren.${i}.title`)
       .and.equal(tellme.getText(8 - i));
+    // console.log(i);
     doc.should.have.nested
       .property(`child.subChildren.${i}.slug`)
       .and.equal(tellme.getSlug(8 - i));
@@ -344,8 +346,40 @@ ParentSchema.statics.testChangedDoc = function(doc) {
   }
 };
 
+const SimpleChildSchema = new mongoose.Schema({
+  title: { type: String },
+  slug: { type: String, slug: 'title' },
+});
+
+const SimpleParentSchema = new mongoose.Schema({
+  simpleParent: { type: String },
+  title: { type: String },
+  slug: { type: String, slug: 'title' },
+  child: SimpleChildSchema,
+  children: [SimpleChildSchema],
+});
+
+const UniqueChildSchema = new mongoose.Schema({
+  title: { type: String },
+  slugShort: { type: String, slug: 'title', unique:true },
+  slugCounter: { type: String, slug: 'title', unique:true, slug_padding_size },
+});
+
+const UniqueParentSchema = new mongoose.Schema({
+  n: { type: Number },
+  title: { type: String },
+  slugShort: { type: String, slug: 'title', unique:true },
+  slugCounter: { type: String, slug: 'title', unique:true, slug_padding_size },
+  child: UniqueChildSchema,
+  children: [UniqueChildSchema],
+});
+
 module.exports = {
   SubChildSchema,
   ChildSchema,
-  ParentSchema
+  ParentSchema,
+  SimpleChildSchema,
+  SimpleParentSchema,
+  UniqueChildSchema,
+  UniqueParentSchema,
 };

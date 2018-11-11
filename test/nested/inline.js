@@ -8,7 +8,6 @@ const mongoose = require('mongoose'),
 const { nIterations, Inline, SimpleInline } = require('./../model');
 
 const tellme = require('./../tellme');
-/* Tests */
 
 describe('Inline Docs', function() {
   beforeEach(async () => {

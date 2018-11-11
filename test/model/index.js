@@ -1,19 +1,34 @@
 'use strict';
 const mongoose = require('mongoose');
-const { options, slug_padding_size,nIterations } = require('./../options');
+const { options, slug_padding_size, nIterations } = require('./../options');
 const slugGenerator = require('../../.');
 mongoose.plugin(slugGenerator, options);
 
-const InlineSchema = require('./InlineSchema.js');
-const {SubChildSchema,ChildSchema,ParentSchema} = require('./NestedSchema.js');
+const {
+  InlineSchema,
+  SimpleInlineSchema,
+  InlineUniqueSchema,
+} = require('./InlineSchema.js');
+const {
+  SubChildSchema,
+  ChildSchema,
+  ParentSchema,
+  SimpleChildSchema,
+  SimpleParentSchema,
+  UniqueChildSchema,
+  UniqueParentSchema
+} = require('./NestedSchema.js');
 const CompoundUnique = new mongoose.Schema({
-  type:{type: String},
-  name:{type: String},
+  type: { type: String },
+  name: { type: String },
 });
-CompoundUnique.index({
-  type:1,
-  name:1,
-},{unique: true});
+CompoundUnique.index(
+  {
+    type: 1,
+    name: 1,
+  },
+  { unique: true }
+);
 
 const ResourceShortId = new mongoose.Schema({
   title: { type: String },
@@ -21,7 +36,7 @@ const ResourceShortId = new mongoose.Schema({
   otherField: { type: String },
   slug: { type: String, slug: ['title', 'subtitle'] },
   uniqueSlug: { type: String, unique: true, slug: 'title' },
-  forcedSlug: { type:String, slug: ['subtitle'], force_id:true }
+  forcedSlug: { type: String, slug: ['subtitle'], force_id: true },
 });
 
 const ResourceCounter = new mongoose.Schema({
@@ -91,53 +106,7 @@ const HooksSchema = new mongoose.Schema({
   },
 });
 
-const SimpleChildSchema = new mongoose.Schema({
-  title: { type: String },
-  slug: { type: String, slug: 'title' },
-});
-
-const SimpleParentSchema = new mongoose.Schema({
-  simpleParent: { type: String },
-  title: { type: String },
-  slug: { type: String, slug: 'title' },
-  child: SimpleChildSchema,
-  children: [SimpleChildSchema],
-});
-
-
-const SimpleInlineSchema = new mongoose.Schema({
-  title: { type: String },
-  slug: { type: String, slug: 'title' },
-  child:{
-    title: { type: String },
-    slug: { type: String, slug: 'title' }
-  },
-  children:[
-    {
-      title: { type: String },
-      slug: { type: String, slug: 'title' }
-    }
-  ]
-});
-
-
-
-const InlineUniqueSchema = new mongoose.Schema({
-  title: { type: String },
-  slug: { type: String, unique: true, slug: 'title' },
-  list: { type: Array },
-  child: {
-    title: { type: String },
-    slug: { type: String, slug: 'title', unique: true },
-  },
-  children: [
-    {
-      title: { type: String, unique: true },
-      slug: { type: String, /*slug: 'title',*/ unique: true },
-    },
-  ],
-});
-const CompoundU = mongoose.model('CompoundUnique',CompoundUnique);
+const CompoundU = mongoose.model('CompoundUnique', CompoundUnique);
 const ShortId = mongoose.model('ResourceShortId', ResourceShortId);
 const Counter = mongoose.model('ResourceCounter', ResourceCounter);
 const GroupedUniqueCounter = mongoose.model(
@@ -158,6 +127,8 @@ const SimpleInline = mongoose.model('SimpleInlineSchema', SimpleInlineSchema);
 const InlineUnique = mongoose.model('InlineUniqueSchema', InlineUniqueSchema);
 const SimpleChild = mongoose.model('SimpleChildSchema', SimpleChildSchema);
 const SimpleParent = mongoose.model('SimpleParentSchema', SimpleParentSchema);
+const UniqueChild = mongoose.model('UniqueChildSchema', UniqueChildSchema);
+const UniqueParent = mongoose.model('UniqueParentSchema', UniqueParentSchema);
 
 module.exports = {
   CompoundU,
@@ -175,4 +146,6 @@ module.exports = {
   Inline,
   SimpleInline,
   InlineUnique,
+  UniqueChild,
+  UniqueParent
 };

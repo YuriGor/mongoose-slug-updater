@@ -55,7 +55,7 @@ describe('Nested Docs', function() {
     let doc = await Parent.create(docCfg);
 
     Parent.testNewDoc(doc);
-    doc = Parent.changeNewDoc(doc);
+    doc = Parent.changeDoc(doc);
 
     await doc.save();
     Parent.testChangedDoc(doc);
@@ -65,7 +65,7 @@ describe('Nested Docs', function() {
     await Parent.updateOne({}, Parent.getNewDoc(), { upsert: true });
     let doc = await Parent.findOne({});
     Parent.testNewDoc(doc);
-    let mdf = Parent.changeNewDoc({});
+    let mdf = Parent.changeDoc({});
     await Parent.updateOne({ _id: doc._id }, mdf);
     let editedDoc = await Parent.findById(doc._id);
     Parent.testChangedDoc(editedDoc);
@@ -75,7 +75,7 @@ describe('Nested Docs', function() {
     await Parent.update({}, Parent.getNewDoc(), { upsert: true });
     let doc = await Parent.findOne({});
     Parent.testNewDoc(doc);
-    let mdf = Parent.changeNewDoc({});
+    let mdf = Parent.changeDoc({});
     await Parent.update({ _id: doc._id }, mdf);
     let editedDoc = await Parent.findById(doc._id);
     Parent.testChangedDoc(editedDoc);
@@ -85,7 +85,7 @@ describe('Nested Docs', function() {
     await Parent.updateMany({}, Parent.getNewDoc(), { upsert: true });
     let doc = await Parent.findOne({});
     Parent.testNewDoc(doc);
-    let mdf = Parent.changeNewDoc({});
+    let mdf = Parent.changeDoc({});
     await Parent.updateMany({ _id: doc._id }, mdf);
     let editedDoc = await Parent.findById(doc._id);
     Parent.testChangedDoc(editedDoc);
@@ -97,7 +97,7 @@ describe('Nested Docs', function() {
       new: true,
     });
     Parent.testNewDoc(doc);
-    let mdf = Parent.changeNewDoc({});
+    let mdf = Parent.changeDoc({});
     let editedDoc = await Parent.findOneAndUpdate({ _id: doc._id }, mdf, {
       new: true,
     });

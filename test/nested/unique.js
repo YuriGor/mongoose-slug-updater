@@ -1,0 +1,213 @@
+'use strict';
+
+const mongoose = require('mongoose'),
+  chai = require('chai'),
+  should = chai.should(),
+  assert = require('assert');
+const { nIterations } = require('./../options');
+const { InlineUnique, UniqueChild, UniqueParent } = require('./../model');
+
+const tellme = require('./../tellme');
+
+describe('Inline Unique Docs', function() {
+  beforeEach(async () => {
+    await InlineUnique.remove({});
+  });
+
+  afterEach(async () => {
+    await InlineUnique.remove({});
+  });
+
+  it('Create/change/save Inline Unique Docs', async () => {
+    // console.log('nIterations', nIterations);
+    let docs = [];
+    for (let i = 0; i < nIterations; i++) {
+      docs[i] = await InlineUnique.create(InlineUnique.getNewDoc(i));
+      InlineUnique.testNewDoc(docs[i], i);
+    }
+    for (let i = 0; i < nIterations; i++) {
+      InlineUnique.changeDoc(docs[i]);
+      docs[i] = await docs[i].save();
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+    for (let i = 0; i < nIterations; i++) {
+      InlineUnique.changeDoc(docs[i]);
+      docs[i] = await docs[i].save();
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+  });
+  it('Upsert/updateOne Inline Unique Docs', async () => {
+    // console.log('nIterations', nIterations);
+    for (let i = 0; i < nIterations; i++) {
+      await InlineUnique.updateOne({n:i},InlineUnique.getNewDoc(i),{upsert:true});
+    }
+    let docs = await InlineUnique.find();
+    // console.log(0);
+    // console.log(docs[0 ]);
+    for (let i = 0; i < nIterations; i++) {
+      InlineUnique.testNewDoc(docs[i], i);
+    }
+    // console.log(docs[0].children[4]);
+    for (let i = 0; i < nIterations; i++) {
+      let mdf = InlineUnique.changeDoc({});
+      // if(!i){
+      //   console.log(mdf);
+      // }
+      await InlineUnique.updateOne({n:i},mdf);
+    }
+    docs = await InlineUnique.find();
+    // console.log(docs);
+    for (let i = 0; i < nIterations; i++) {
+      // console.log(i);
+      // console.log(docs[i]);
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+  });
+
+  it('Upsert/updateMany Inline Unique Docs', async () => {
+    // console.log('nIterations', nIterations);
+    for (let i = 0; i < nIterations; i++) {
+      await InlineUnique.updateMany({n:i},InlineUnique.getNewDoc(i),{upsert:true});
+    }
+    let docs = await InlineUnique.find();
+    // console.log(0);
+    // console.log(docs[0 ]);
+    for (let i = 0; i < nIterations; i++) {
+      InlineUnique.testNewDoc(docs[i], i);
+    }
+    // console.log(docs[0].children[4]);
+    let mdf = InlineUnique.changeDocPaths({});
+    // console.log(mdf);
+    await InlineUnique.updateMany({},mdf);
+    docs = await InlineUnique.find();
+    // console.log(docs);
+    for (let i = 0; i < nIterations; i++) {
+      // console.log(i);
+      // console.log(docs[i]);
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+  });
+  it('Upsert/findOneAndUpdate Inline Unique Docs', async () => {
+    let docs = [];
+    for (let i = 0; i < nIterations; i++) {
+      docs[i] = await InlineUnique.findOneAndUpdate({n:i},InlineUnique.getNewDoc(i),{upsert:true,new:true});
+      InlineUnique.testNewDoc(docs[i], i);
+    }
+
+    let mdf = InlineUnique.changeDoc({});
+    for (let i = 0; i < nIterations; i++) {
+      docs[i] = await InlineUnique.findOneAndUpdate({n:i},mdf,{new:true});
+      // console.log(i,docs[i]);
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+    for (let i = 0; i < nIterations; i++) {
+      docs[i] = await InlineUnique.findOneAndUpdate({n:i},mdf,{new:true});
+      // console.log(i,docs[i]);
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+
+  });
+});
+
+
+describe('Nested Unique Docs', function() {
+  beforeEach(async () => {
+    await UniqueParent.remove({});
+  });
+
+  afterEach(async () => {
+    await UniqueParent.remove({});
+  });
+
+  it('Create/change/save Inline Unique Docs', async () => {
+    // console.log('nIterations', nIterations);
+    let docs = [];
+    for (let i = 0; i < nIterations; i++) {
+      docs[i] = await UniqueParent.create(InlineUnique.getNewDoc(i));
+      // console.log(i);
+      // console.log(docs[i]);
+      InlineUnique.testNewDoc(docs[i], i);
+    }
+    for (let i = 0; i < nIterations; i++) {
+      InlineUnique.changeDoc(docs[i]);
+      docs[i] = await docs[i].save();
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+    for (let i = 0; i < nIterations; i++) {
+      InlineUnique.changeDoc(docs[i]);
+      docs[i] = await docs[i].save();
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+  });
+  it('Upsert/updateOne Inline Unique Docs', async () => {
+    // console.log('nIterations', nIterations);
+    for (let i = 0; i < nIterations; i++) {
+      await UniqueParent.updateOne({n:i},InlineUnique.getNewDoc(i),{upsert:true});
+    }
+    let docs = await UniqueParent.find();
+    // console.log(0);
+    // console.log(docs[0 ]);
+    for (let i = 0; i < nIterations; i++) {
+      InlineUnique.testNewDoc(docs[i], i);
+    }
+    // console.log(docs[0].children[4]);
+    for (let i = 0; i < nIterations; i++) {
+      let mdf = InlineUnique.changeDoc({});
+      // if(!i){
+      //   console.log(mdf);
+      // }
+      await UniqueParent.updateOne({n:i},mdf);
+    }
+    docs = await UniqueParent.find();
+    // console.log(docs);
+    for (let i = 0; i < nIterations; i++) {
+      // console.log(i);
+      // console.log(docs[i]);
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+  });
+
+  it('Upsert/updateMany Inline Unique Docs', async () => {
+    // console.log('nIterations', nIterations);
+    for (let i = 0; i < nIterations; i++) {
+      await UniqueParent.updateMany({n:i},InlineUnique.getNewDoc(i),{upsert:true});
+    }
+    let docs = await UniqueParent.find();
+    // console.log(0);
+    // console.log(docs[0 ]);
+    for (let i = 0; i < nIterations; i++) {
+      InlineUnique.testNewDoc(docs[i], i);
+    }
+    // console.log(docs[0].children[4]);
+    let mdf = InlineUnique.changeDocPaths({});
+    // console.log(mdf);
+    await UniqueParent.updateMany({},mdf);
+    docs = await UniqueParent.find();
+    // console.log(docs);
+    for (let i = 0; i < nIterations; i++) {
+      // console.log(i);
+      // console.log(docs[i]);
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+  });
+  it('Upsert/findOneAndUpdate Inline Unique Docs', async () => {
+    let docs = [];
+    for (let i = 0; i < nIterations; i++) {
+      docs[i] = await UniqueParent.findOneAndUpdate({n:i},InlineUnique.getNewDoc(i),{upsert:true,new:true});
+      InlineUnique.testNewDoc(docs[i], i);
+    }
+
+    let mdf = InlineUnique.changeDoc({});
+    for (let i = 0; i < nIterations; i++) {
+      docs[i] = await UniqueParent.findOneAndUpdate({n:i},mdf,{new:true});
+      // console.log(i,docs[i]);
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+    for (let i = 0; i < nIterations; i++) {
+      docs[i] = await UniqueParent.findOneAndUpdate({n:i},mdf,{new:true});
+      // console.log(i,docs[i]);
+      InlineUnique.testChangedDoc(docs[i], i);
+    }
+
+  });
+});
