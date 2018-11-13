@@ -1,6 +1,6 @@
 {
   "name": "mongoose-slug-updater",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Sophisticated slugifier plugin for Mongoose: - Schema-based declaration - Single or compound slugs - Nested docs and arrays support - Relative or absolute paths to any fields - Initial generation and updating on any change - create, save, update, updateOne, updateMany or findOneAndUpdate supported - $set update operator support - Unique slugs - Counter and shortId styles - Autoloading of missing data",
   "main": "index.js",
   "directories": {
