@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+
 const mongoose = require('mongoose'),
   chai = require('chai'),
   should = chai.should(),
@@ -10,11 +12,10 @@ const {
   slug_padding_size,
   GroupedUniqueCounter,
   GroupedUniqueShortId,
-} = require("./model");
+} = require('./model');
 
 const tellme = require('./tellme');
 /* Tests */
-
 
 describe('Grouped Resources (Counter)', function() {
   before(async () => {
@@ -30,10 +31,31 @@ describe('Grouped Resources (Counter)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 1',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
-    doc.should.have
-      .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+    doc.should.have.property('title').and.equal(tellme.getText(0, 0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 0));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 0));
+
+    doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 0));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 0));
+    // console.log(doc);
   });
 
   it("Create new resource for grouped ID and check it's generated as with increment", async () => {
@@ -41,10 +63,32 @@ describe('Grouped Resources (Counter)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 1',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
+    doc.should.have.property('title').and.equal(tellme.getText(0, 1));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 1));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 1));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getCounterSlug(0,1));
+      .and.equal(tellme.getCounterSlug(0, 1));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 1));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 1));
   });
 
   it("Create new resource for second group and check it's generated as normal", async () => {
@@ -52,10 +96,30 @@ describe('Grouped Resources (Counter)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 2',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
-    doc.should.have
-      .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+    doc.should.have.property('title').and.equal(tellme.getText(0, 0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 0));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 0));
+
+    doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 0));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 0));
   });
 
   it("Create new resource for second group and check it's generated as with increment", async () => {
@@ -63,24 +127,77 @@ describe('Grouped Resources (Counter)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 2',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
+
+    doc.should.have.property('title').and.equal(tellme.getText(0, 1));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 1));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 1));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getCounterSlug(0,1));
+      .and.equal(tellme.getCounterSlug(0, 1));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 1));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 1));
   });
 
   it('Change group and check slug counter was incremented accordingly', async () => {
     let doc = await GroupedUniqueCounter.findOne({
       group: 'group 2',
-      uniqueSlug: tellme.getCounterSlug(0,1),
+      uniqueSlug: tellme.getCounterSlug(0, 1),
     });
-    doc.group = 'group 1';
-    doc = await doc.save();
-    // let docs = await GroupedUniqueCounter.find();
-    // console.log("grouped docs",docs);
+    doc.should.have.property('title').and.equal(tellme.getText(0, 1));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 1));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 1));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getCounterSlug(0,2));
+      .and.equal(tellme.getCounterSlug(0, 1));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 1));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 1));
+    doc.group = 'group 1';
+    doc = await doc.save();
+
+    doc.should.have.property('title').and.equal(tellme.getText(0, 2));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 2));
+
+    doc.should.have
+      .property('uniqueSlug')
+      .and.equal(tellme.getCounterSlug(0, 2));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 2));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 2));
   });
 
   it('UpdateOne group and check slug counter was incremented accordingly', async () => {
@@ -88,46 +205,148 @@ describe('Grouped Resources (Counter)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 2',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
+    doc.should.have.property('title').and.equal(tellme.getText(0, 1));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 1));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 1));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getCounterSlug(0,1));
+      .and.equal(tellme.getCounterSlug(0, 1));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 1));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 1));
 
-    // console.log("---------------updateOne group");
-    await GroupedUniqueCounter.updateOne({ _id: doc.id }, { group: 'group 1' });
-    let editedDoc = await GroupedUniqueCounter.findById(doc.id);
+    await GroupedUniqueCounter.updateOne(
+      { _id: doc._id },
+      { $set: { group: 'group 1' } }
+    );
+    let editedDoc = await GroupedUniqueCounter.findById(doc._id);
+    editedDoc.should.have.property('title').and.equal(tellme.getText(0, 3));
+    editedDoc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 3));
+    editedDoc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 3));
+
     editedDoc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getCounterSlug(0,3));
+      .and.equal(tellme.getCounterSlug(0, 3));
+    editedDoc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 3));
+    editedDoc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 3));
   });
 
   it('Change group to brand new and check slug was updated to normal', async () => {
     let doc = await GroupedUniqueCounter.findOne({
       group: 'group 1',
-      uniqueSlug: tellme.getCounterSlug(0,2),
+      uniqueSlug: tellme.getCounterSlug(0, 2),
     });
-    doc.group = 'group 3';
-    doc = await doc.save();
+
+    doc.should.have.property('title').and.equal(tellme.getText(0, 2));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 2));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+      .and.equal(tellme.getCounterSlug(0, 2));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 2));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 2));
+
+    doc.group = 'group 3';
+    doc = await doc.save();
+
+    doc.should.have.property('title').and.equal(tellme.getText(0, 0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 0));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 0));
+
+    doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 0));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 0));
   });
 
   it('UpdateOne group to brand new and check slug was updated to normal', async () => {
     let doc = await GroupedUniqueCounter.findOne({
       group: 'group 1',
-      uniqueSlug: tellme.getCounterSlug(0,3),
+      uniqueSlug: tellme.getCounterSlug(0, 3),
     });
-    await GroupedUniqueCounter.updateOne({ _id: doc.id }, { group: 'group 4' });
-    let editedDoc = await GroupedUniqueCounter.findById(doc.id);
-    editedDoc.should.have
+
+    doc.should.have.property('title').and.equal(tellme.getText(0, 3));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 3));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 3));
+
+    doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+      .and.equal(tellme.getCounterSlug(0, 3));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 3));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 3));
+
+    await GroupedUniqueCounter.updateOne(
+      { _id: doc._id },
+      { group: 'group 4' }
+    );
+    let editedDoc = await GroupedUniqueCounter.findById(doc._id);
+
+    doc.should.have.property('title').and.equal(tellme.getText(0, 0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2, 0));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2, 0));
+
+    editedDoc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
+    editedDoc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 0));
+    editedDoc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.equal(tellme.getCounterSlug(2, 0));
   });
 });
-
-
-
 
 describe('Grouped Resources (ShortId)', function() {
   before(async () => {
@@ -143,10 +362,32 @@ describe('Grouped Resources (ShortId)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 1',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
+    doc.should.have.property('title').and.equal(tellme.getText(0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+      .and.match(tellme.getShortRegex(0, 0));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 0));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 0));
   });
 
   it("Create new resource for grouped ID and check it's generated with id postfix", async () => {
@@ -154,10 +395,32 @@ describe('Grouped Resources (ShortId)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 1',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
+    doc.should.have.property('title').and.equal(tellme.getText(0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.match(tellme.getShortRegex(0));
+      .and.match(tellme.getShortRegex(0, 1));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 1));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 1));
   });
 
   it("Create new resource for second group and check it's generated as normal", async () => {
@@ -165,10 +428,32 @@ describe('Grouped Resources (ShortId)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 2',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
+    doc.should.have.property('title').and.equal(tellme.getText(0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+      .and.match(tellme.getShortRegex(0, 0));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 0));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 0));
   });
 
   it("Create new resource for second group and check it's generated with id postfix", async () => {
@@ -177,10 +462,32 @@ describe('Grouped Resources (ShortId)', function() {
       subtitle: tellme.getText(1),
       group: 'group 2',
       otherField: 'to move in group 1',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
+    doc.should.have.property('title').and.equal(tellme.getText(0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.match(tellme.getShortRegex(0));
+      .and.match(tellme.getShortRegex(0, 1));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 1));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 1));
   });
 
   it('Change group and check slug was appended with id postfix', async () => {
@@ -190,19 +497,47 @@ describe('Grouped Resources (ShortId)', function() {
     });
     doc.group = 'group 1';
     let uniqueSlug = doc.uniqueSlug;
-    let existingSlug = await GroupedUniqueShortId.findOne({
+    let globalGroupSlug0 = doc.children[0].globalGroupSlug;
+    let globalGroupSlug1 = doc.children[1].globalGroupSlug;
+    let existingDocs = await GroupedUniqueShortId.find({
       group: 'group 1',
-      uniqueSlug,
     });
-    // console.log('exists', existingSlug);
+    let uniqueSlugExists = _.some(existingDocs, ['uniqueSlug', uniqueSlug]);
+    let globalGroupSlug0Exists =
+      _.some(existingDocs, ['children[0].globalGroupSlug', globalGroupSlug0]) ||
+      _.some(existingDocs, ['children[1].globalGroupSlug', globalGroupSlug0]);
+    let globalGroupSlug1Exists =
+      _.some(existingDocs, ['children[0].globalGroupSlug', globalGroupSlug1]) ||
+      _.some(existingDocs, ['children[1].globalGroupSlug', globalGroupSlug1]);
+
     doc = await doc.save();
-    if (!existingSlug)
+
+    if (!uniqueSlugExists) {
       doc.should.have.property('uniqueSlug').and.equal(uniqueSlug);
-    else
+    } else{
       doc.should.have
         .property('uniqueSlug')
         .and.match(tellme.getShortRegex(0))
         .and.not.equal(uniqueSlug);
+    }
+    if(!globalGroupSlug0Exists){
+      doc.should.have.nested
+        .property('children[0].globalGroupSlug')
+        .and.equal(globalGroupSlug0);
+    }else{
+      doc.should.have.nested.property('children[0].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2))
+      .and.not.equal(globalGroupSlug0Exists);
+    }
+    if(!globalGroupSlug1Exists){
+      doc.should.have.nested
+        .property('children[1].globalGroupSlug')
+        .and.equal(globalGroupSlug1);
+    }else{
+      doc.should.have.nested.property('children[1].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2))
+      .and.not.equal(globalGroupSlug1Exists);
+    }
   });
 
   it('updateOne group and check slug counter was appended with id postfix', async () => {
@@ -210,24 +545,75 @@ describe('Grouped Resources (ShortId)', function() {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       group: 'group 2',
+      children: [
+        {
+          title: tellme.getText(2),
+        },
+        {
+          title: tellme.getText(2),
+        },
+      ],
     });
-    doc.should.have
-      .property('uniqueSlug')
-      .and.match(tellme.getShortRegex(0));
+    doc.should.have.property('uniqueSlug').and.match(tellme.getShortRegex(0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2));
 
-    let existingSlug = await GroupedUniqueShortId.findOne({
+    let uniqueSlug = doc.uniqueSlug;
+    let globalGroupSlug0 = doc.children[0].globalGroupSlug;
+    let globalGroupSlug1 = doc.children[1].globalGroupSlug;
+    let existingDocs = await GroupedUniqueShortId.find({
       group: 'group 1',
-      uniqueSlug: doc.uniqueSlug,
     });
-    await GroupedUniqueShortId.updateOne({ _id: doc.id }, { group: 'group 1' });
-    let editedDoc = await GroupedUniqueShortId.findById(doc.id);
-    if (!existingSlug)
-      editedDoc.should.have.property('uniqueSlug').and.equal(doc.uniqueSlug);
-    else
-      editedDoc.should.have
+    let uniqueSlugExists = _.some(existingDocs, ['uniqueSlug', uniqueSlug]);
+    let globalGroupSlug0Exists =
+      _.some(existingDocs, ['children[0].globalGroupSlug', globalGroupSlug0]) ||
+      _.some(existingDocs, ['children[1].globalGroupSlug', globalGroupSlug0]);
+    let globalGroupSlug1Exists =
+      _.some(existingDocs, ['children[0].globalGroupSlug', globalGroupSlug1]) ||
+      _.some(existingDocs, ['children[1].globalGroupSlug', globalGroupSlug1]);
+
+    await GroupedUniqueShortId.updateOne(
+      { _id: doc._id },
+      {$set:{ group: 'group 1' }}
+    );
+    doc = await GroupedUniqueShortId.findById(doc._id);
+    doc.should.have.property('title').and.equal(tellme.getText(0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2));
+    if (!uniqueSlugExists) {
+      doc.should.have.property('uniqueSlug').and.equal(uniqueSlug);
+    } else{
+      doc.should.have
         .property('uniqueSlug')
         .and.match(tellme.getShortRegex(0))
-        .and.not.equal(doc.uniqueSlug);
+        .and.not.equal(uniqueSlug);
+    }
+    if(!globalGroupSlug0Exists){
+      doc.should.have.nested
+        .property('children[0].globalGroupSlug')
+        .and.equal(globalGroupSlug0);
+    }else{
+      doc.should.have.nested.property('children[0].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2))
+      .and.not.equal(globalGroupSlug0Exists);
+    }
+    if(!globalGroupSlug1Exists){
+      doc.should.have.nested
+        .property('children[1].globalGroupSlug')
+        .and.equal(globalGroupSlug1);
+    }else{
+      doc.should.have.nested.property('children[1].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2))
+      .and.not.equal(globalGroupSlug1Exists);
+    }
   });
 
   it('Change group to brand new and check slug was updated to normal', async () => {
@@ -239,9 +625,23 @@ describe('Grouped Resources (ShortId)', function() {
     });
     doc.group = 'group 3';
     doc = await doc.save();
+    doc.should.have.property('title').and.equal(tellme.getText(0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2));
+
     doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+      .and.match(tellme.getShortRegex(0, 0));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 0));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 0));
   });
 
   it('UpdateOne group to brand new and check slug was updated to normal', async () => {
@@ -249,10 +649,27 @@ describe('Grouped Resources (ShortId)', function() {
       group: 'group 1',
       uniqueSlug: { $ne: tellme.getSlug(0) },
     });
-    await GroupedUniqueShortId.updateOne({ _id: doc.id }, { group: 'group 4' });
-    let editedDoc = await GroupedUniqueShortId.findById(doc.id);
-    editedDoc.should.have
+    await GroupedUniqueShortId.updateOne(
+      { _id: doc._id },
+      {$set:{ group: 'group 4' }}
+    );
+    doc = await GroupedUniqueShortId.findById(doc._id);
+    doc.should.have.property('title').and.equal(tellme.getText(0));
+    doc.should.have.nested
+      .property('children[0].title')
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property('children[1].title')
+      .and.equal(tellme.getText(2));
+
+    doc.should.have
       .property('uniqueSlug')
-      .and.equal(tellme.getSlug(0));
+      .and.match(tellme.getShortRegex(0, 0));
+    doc.should.have.nested
+      .property('children[0].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 0));
+    doc.should.have.nested
+      .property('children[1].globalGroupSlug')
+      .and.match(tellme.getShortRegex(2, 0));
   });
 });

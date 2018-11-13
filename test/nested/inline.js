@@ -3,6 +3,7 @@
 const mongoose = require('mongoose'),
   chai = require('chai'),
   should = chai.should(),
+  expect = chai.expect,
   assert = require('assert');
 
 const { nIterations, Inline, SimpleInline } = require('./../model');
@@ -108,41 +109,108 @@ describe('Inline Docs', function() {
       .and.equal(tellme.getSlug(2));
   });
 
+  it('Create/Save nested docs declared inline', async () => {
+    let docs = [];
+    for(let i=0;i<nIterations;i++){
+      docs[i] = await Inline.create(Inline.getNewDoc(i));
+      Inline.testNewDoc(doc,i);
+    }
+    for(let i=0;i<nIterations;i++){
+      docs[i] = Inline.changeDoc(docs[i],i);
+      await docs[i].save();
+      Inline.testChangedDoc(docs[i],i);
+    }
+    let equalDocs = [];
+    for(let i=0;i<nIterations;i++){
+      equalDocs[i] = Inline.changeDoc(docs[i],i);
+      await equalDocs[i].save();
+      Inline.testChangedDoc(equalDocs[i],i);
+    }
+    expect(equalDocs).to.deep.equal(docs);
+  });
+
   it('UpdateOne nested docs declared inline', async () => {
-    await Inline.updateOne({},Inline.getNewDoc(),{upsert:true});
-    let doc = await Inline.findOne({});
-    Inline.testNewDoc(doc);
+    let docs = [];
+    for(let i=0;i<nIterations;i++){
+      await Inline.updateOne({n:i},Inline.getNewDoc(n),{upsert:true});
+      docs[i] = await Inline.findOne({n:i});
+      Inline.testNewDoc(docs[i],i);
+    }
     let mdf = Inline.changeDoc({});
-    await Inline.updateOne({ _id:doc._id }, mdf);
-    let editedDoc = await Inline.findById(doc._id);
-    Inline.testChangedDoc(editedDoc);
+    for(let i=0;i<nIterations;i++){
+      await Inline.updateOne({ n:i }, mdf);
+      docs[i] = await Inline.findOne({n:i});
+      Inline.testChangedDoc(docs[i],n);
+    }
+    let equalDocs=[];
+    for(let i=0;i<nIterations;i++){
+      await Inline.updateOne({ n:i }, mdf);
+      equalDocs[i] = await Inline.findOne({n:i});
+      Inline.testChangedDoc(equalDocs[i],n);
+    }
+    expect(equalDocs).to.deep.equal(docs);
   });
 
   it('Update nested docs declared inline', async () => {
-    await Inline.update({},Inline.getNewDoc(),{upsert:true});
-    let doc = await Inline.findOne({});
-    Inline.testNewDoc(doc);
+    let docs = [];
+    for(let i=0;i<nIterations;i++){
+      await Inline.update({n:i},Inline.getNewDoc(n),{upsert:true});
+      docs[i] = await Inline.findOne({n:i});
+      Inline.testNewDoc(docs[i],i);
+    }
     let mdf = Inline.changeDoc({});
-    await Inline.update({ _id:doc._id }, mdf);
-    let editedDoc = await Inline.findById(doc._id);
-    Inline.testChangedDoc(editedDoc);
+    for(let i=0;i<nIterations;i++){
+      await Inline.update({ n:i }, mdf);
+      docs[i] = await Inline.findOne({n:i});
+      Inline.testChangedDoc(docs[i],n);
+    }
+    let equalDocs=[];
+    for(let i=0;i<nIterations;i++){
+      await Inline.update({ n:i }, mdf);
+      equalDocs[i] = await Inline.findOne({n:i});
+      Inline.testChangedDoc(equalDocs[i],n);
+    }
+    expect(equalDocs).to.deep.equal(docs);
   });
 
   it('UpdateMany nested docs declared inline', async () => {
-    await Inline.updateMany({},Inline.getNewDoc(),{upsert:true});
-    let doc = await Inline.findOne({});
-    Inline.testNewDoc(doc);
-    let mdf = Inline.changeDoc({});
-    await Inline.updateMany({ _id:doc._id }, mdf);
-    let editedDoc = await Inline.findById(doc._id);
-    Inline.testChangedDoc(editedDoc);
+    for(let i=0;i<nIterations;i++){
+      await Inline.updateMany({n:i},Inline.getNewDoc(n),{upsert:true});
+    }
+    let docs = await Inline.find();
+    for(let i=0;i<nIterations;i++){
+      Inline.testNewDoc(docs[i],i);
+    }
+    let mdf = Inline.changeDocPaths({});
+    await Inline.updateMany({}, mdf);
+    docs = await Inline.find();
+    for(let i=0;i<nIterations;i++){
+      Inline.testChangedDoc(docs[i],i);
+    }
+    await Inline.updateMany({}, mdf);
+    let equalDocs=await Inline.find();
+    for(let i=0;i<nIterations;i++){
+      Inline.testChangedDoc(equalDocs[i],i);
+    }
+    expect(equalDocs).to.deep.equal(docs);
   });
 
   it('findOneAndUpdate nested docs declared inline', async () => {
-    let doc = await Inline.findOneAndUpdate({},Inline.getNewDoc(),{upsert:true,new:true});
-    Inline.testNewDoc(doc);
+    let docs = [];
+    for(let i=0;i<nIterations;i++){
+      docs[i] = await Inline.findOneAndUpdate({n:i},Inline.getNewDoc(i),{upsert:true,new:true});
+      Inline.testNewDoc(docs[i],i);
+    }
     let mdf = Inline.changeDoc({});
-    let editedDoc = await Inline.findOneAndUpdate({ _id:doc._id }, mdf,{new:true});
-    Inline.testChangedDoc(editedDoc);
+    for(let i=0;i<nIterations;i++){
+      docs[i] = await Inline.findOneAndUpdate({n:i}, mdf,{new:true});
+      Inline.testNewDoc(docs[i],i);
+    }
+    let equalDocs=[];
+    for(let i=0;i<nIterations;i++){
+      equalDocs[i] = await Inline.findOneAndUpdate({n:i}, mdf,{new:true});
+      Inline.testNewDoc(equalDocs[i],i);
+    }
+    expect(equalDocs).to.deep.equal(docs);
   });
 });

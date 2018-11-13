@@ -26,15 +26,20 @@ function getSlug(i, j) {
   return slug[i] + (j !== undefined ? options.separator + slug[j] : '');
 }
 const regex = slug.map(s => new RegExp('^' + s + options.separator + '.+$'));
+const dummyRegex = slug.map(s => new RegExp('^' + s + '$'));
 
 function getCounterSlug(index, n) {
-  return (
-    getSlug(index) + options.separator + _.padStart(n, slug_padding_size, '0')
-  );
+  if(n)
+    return (
+      getSlug(index) + options.separator + _.padStart(n, slug_padding_size, '0')
+    );
+  return getSlug(index);
 }
 
-function getShortRegex(index) {
-  return regex[index];
+function getShortRegex(index,n) {
+  if(n!==0)
+    return regex[index];
+  return dummyRegex[index];
 }
 
 module.exports = {

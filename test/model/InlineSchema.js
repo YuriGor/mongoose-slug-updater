@@ -8,22 +8,48 @@ const tellme = require('./../tellme');
 const { options, slug_padding_size, nIterations } = require('./../options');
 
 const InlineSchema = new mongoose.Schema({
+  n: { type: Number },
   // root title
   title: { type: String },
   // root slug with relative path to root title
   slug: { type: String, slug: 'title' },
+  slugShort: { type: String, slug: 'title', unique: true },
+  slugCounter: { type: String, slug: 'title', unique: true, slug_padding_size },
   // root slug with  absolute path to root title
   absoluteSlug: { type: String, slug: '/title' },
   // root slug with relative path to child title
   childSlug: { type: String, slug: 'child.title' },
   // root slug with absolute path to child title
   absoluteChildSlug: { type: String, slug: '/child.title' },
+  absoluteChildSlugShort: {
+    type: String,
+    slug: '/child.title',
+    unique: true,
+  },
+  absoluteChildSlugCounter: {
+    type: String,
+    slug: '/child.title',
+    unique: true,
+    slug_padding_size,
+  },
   // root slug with relative path to child's subchild title
   subChildSlug: { type: String, slug: 'child.subChild.title' },
+  subChildSlugShort: {
+    type: String,
+    slug: 'child.subChild.title',
+    unique: true,
+  },
   // root slug with relative path to the title of first children array element
   childrenSlug0: { type: String, slug: 'children.0.title' },
   // root slug with relative path to the title of 5th children array element
   childrenSlug4: { type: String, slug: 'children.4.title' },
+  childrenSlug4Short: { type: String, slug: 'children.4.title', unique: true },
+  childrenSlug4Counter: {
+    type: String,
+    slug: 'children.4.title',
+    unique: true,
+    slug_padding_size,
+  },
   // root slug with relative path to the title of 4th subChildren' element of first children array element
   subChildrenSlug3: { type: String, slug: 'children.0.subChildren.3.title' },
   // root slug with relative path to the title of 8th subChildren' element of first children array element
@@ -36,6 +62,17 @@ const InlineSchema = new mongoose.Schema({
   subChildrenSlug2SubChild: {
     type: String,
     slug: 'children.0.subChildren.2.subChild.title',
+  },
+  subChildrenSlug2SubChildShort: {
+    type: String,
+    slug: 'children.0.subChildren.2.subChild.title',
+    unique: true,
+  },
+  subChildrenSlug2SubChildCounter: {
+    type: String,
+    slug: 'children.0.subChildren.2.subChild.title',
+    unique: true,
+    slug_padding_size,
   },
   child: {
     title: { type: String },
@@ -87,6 +124,13 @@ const InlineSchema = new mongoose.Schema({
         absoluteChildSlug: { type: String, slug: '/child.title' },
         // title of current array element, because its a parent of this subChild
         relativeParentSlug: { type: String, slug: ':title' },
+        relativeParentSlugShort: { type: String, slug: ':title', unique: true },
+        relativeParentSlugCounter: {
+          type: String,
+          slug: ':title',
+          unique: true,
+          slug_padding_size,
+        },
         // two parents up is a root
         relativeGrandParentSlug: { type: String, slug: '::title' },
       },
@@ -124,8 +168,9 @@ const InlineSchema = new mongoose.Schema({
   ],
 });
 
-InlineSchema.statics.getNewDoc = function() {
+InlineSchema.statics.getNewDoc = function(n) {
   return {
+    n: n || 0,
     title: tellme.getText(0),
     child: {
       title: tellme.getText(1),
@@ -248,15 +293,33 @@ InlineSchema.statics.getNewDoc = function() {
   };
 };
 
-InlineSchema.statics.testNewDoc = function(doc) {
+InlineSchema.statics.testNewDoc = function(doc, n) {
+  n = n || 0;
+  doc.should.have.property('n').and.equal(n);
   doc.should.have.property('title').and.equal(tellme.getText(0));
   doc.should.have.property('slug').and.equal(tellme.getSlug(0));
+  doc.should.have.property('slugShort').and.match(tellme.getShortRegex(0, n));
+  doc.should.have
+    .property('slugCounter')
+    .and.equal(tellme.getCounterSlug(0, n));
   doc.should.have.property('absoluteSlug').and.equal(tellme.getSlug(0));
   doc.should.have.property('childSlug').and.equal(tellme.getSlug(1));
   doc.should.have.property('absoluteChildSlug').and.equal(tellme.getSlug(1));
+  doc.should.have
+    .property('absoluteChildSlugShort')
+    .and.match(tellme.getShortRegex(1, n));
+  doc.should.have
+    .property('absoluteChildSlugCounter')
+    .and.equal(tellme.getCounterSlug(1, n));
   doc.should.have.property('subChildSlug').and.equal(tellme.getSlug(7));
   doc.should.have.property('childrenSlug0').and.equal(tellme.getSlug(0));
   doc.should.have.property('childrenSlug4').and.equal(tellme.getSlug(4));
+  doc.should.have
+    .property('childrenSlug4Short')
+    .and.match(tellme.getShortRegex(4, n));
+  doc.should.have
+    .property('childrenSlug4Counter')
+    .and.equal(tellme.getCounterSlug(4, n));
   doc.should.have.property('subChildrenSlug3').and.equal(tellme.getSlug(3));
   doc.should.have.property('subChildrenSlug7').and.equal(tellme.getSlug(7));
   doc.should.have
@@ -265,6 +328,13 @@ InlineSchema.statics.testNewDoc = function(doc) {
   doc.should.have
     .property('subChildrenSlug2SubChild')
     .and.equal(tellme.getSlug(6));
+  doc.should.have
+    .property('subChildrenSlug2SubChildShort')
+    .and.match(tellme.getShortRegex(6, n));
+  doc.should.have
+    .property('subChildrenSlug2SubChildCounter')
+    .and.equal(tellme.getCounterSlug(6, n));
+
   doc.should.have.nested.property('child.title').and.equal(tellme.getText(1));
   doc.should.have.nested.property('child.slug').and.equal(tellme.getSlug(1));
   doc.should.have.nested
@@ -328,6 +398,13 @@ InlineSchema.statics.testNewDoc = function(doc) {
     doc.should.have.nested
       .property(`children[${i}].subChild.relativeParentSlug`)
       .and.equal(tellme.getSlug(i));
+    doc.should.have.nested
+      .property(`children[${i}].subChild.relativeParentSlugShort`)
+      .and.match(tellme.getShortRegex(i,n));
+    doc.should.have.nested
+      .property(`children[${i}].subChild.relativeParentSlugCounter`)
+      .and.equal(tellme.getCounterSlug(i,n));
+
     doc.should.have.nested
       .property(`children[${i}].subChild.relativeGrandParentSlug`)
       .and.equal(tellme.getSlug(0));
@@ -428,18 +505,34 @@ InlineSchema.statics.changeDoc = function(doc) {
   return doc;
 };
 
-InlineSchema.statics.testChangedDoc = function(doc) {
+InlineSchema.statics.testChangedDoc = function(doc, n = 0) {
   doc.should.have.property('title').and.equal(tellme.getText(8));
   doc.should.have.property('slug').and.equal(tellme.getSlug(8));
+  doc.should.have.property('slugShort').and.match(tellme.getShortRegex(8, n));
+  doc.should.have
+    .property('slugCounter')
+    .and.equal(tellme.getCounterSlug(8, n));
   doc.should.have.property('absoluteSlug').and.equal(tellme.getSlug(8));
   doc.should.have.property('childSlug').and.equal(tellme.getSlug(7));
   doc.should.have.property('absoluteChildSlug').and.equal(tellme.getSlug(7));
+  doc.should.have
+    .property('absoluteChildSlugShort')
+    .and.match(tellme.getShortRegex(7, n));
+  doc.should.have
+    .property('absoluteChildSlugCounter')
+    .and.equal(tellme.getCounterSlug(7, n));
   doc.should.have.property('subChildSlug').and.equal(tellme.getSlug(6));
   doc.should.have.nested
     .property(`children[0].title`)
     .and.equal(tellme.getText(4));
   doc.should.have.property('childrenSlug0').and.equal(tellme.getSlug(4));
   doc.should.have.property('childrenSlug4').and.equal(tellme.getSlug(0));
+  doc.should.have
+    .property('childrenSlug4Short')
+    .and.match(tellme.getShortRegex(0, n));
+  doc.should.have
+    .property('childrenSlug4Counter')
+    .and.equal(tellme.getCounterSlug(0, n));
   doc.should.have.property('subChildrenSlug3').and.equal(tellme.getSlug(8));
   doc.should.have.property('subChildrenSlug7').and.equal(tellme.getSlug(2));
   doc.should.have
@@ -448,6 +541,13 @@ InlineSchema.statics.testChangedDoc = function(doc) {
   doc.should.have
     .property('subChildrenSlug2SubChild')
     .and.equal(tellme.getSlug(4));
+  doc.should.have
+    .property('subChildrenSlug2SubChildShort')
+    .and.match(tellme.getShortRegex(4, n));
+  doc.should.have
+    .property('subChildrenSlug2SubChildCounter')
+    .and.equal(tellme.getCounterSlug(4, n));
+
   doc.should.have.nested.property('child.title').and.equal(tellme.getText(7));
   doc.should.have.nested.property('child.slug').and.equal(tellme.getSlug(7));
   doc.should.have.nested
@@ -557,6 +657,13 @@ InlineSchema.statics.testChangedDoc = function(doc) {
   doc.should.have.nested
     .property(`children[0].subChild.relativeGrandParentSlug`)
     .and.equal(tellme.getSlug(8));
+  doc.should.have.nested
+      .property(`children[0].subChild.relativeParentSlugShort`)
+      .and.match(tellme.getShortRegex(4,n));
+  doc.should.have.nested
+    .property(`children[0].subChild.relativeParentSlugCounter`)
+    .and.equal(tellme.getCounterSlug(4,n));
+
 };
 const SimpleInlineSchema = new mongoose.Schema({
   title: { type: String },
@@ -581,54 +688,84 @@ const InlineUniqueSchema = new mongoose.Schema({
   child: {
     title: { type: String },
     slugShort: { type: String, slug: 'title', unique: true },
-    slugCounter: { type: String, slug: 'title', unique: true, slug_padding_size },
+    slugCounter: {
+      type: String,
+      slug: 'title',
+      unique: true,
+      slug_padding_size,
+    },
   },
   children: [
     {
       title: { type: String },
       slugShort: { type: String, slug: 'title', unique: true },
-      slugCounter: { type: String, slug: 'title', unique: true, slug_padding_size },
+      slugCounter: {
+        type: String,
+        slug: 'title',
+        unique: true,
+        slug_padding_size,
+      },
     },
   ],
 });
 
-InlineUniqueSchema.statics.getNewDoc = function(n){
+InlineUniqueSchema.statics.getNewDoc = function(n) {
   let res = {
     n,
-    title:tellme.getText(0),
-    child:{
-      title:tellme.getText(1)
+    title: tellme.getText(0),
+    child: {
+      title: tellme.getText(1),
     },
-    children:[]
+    children: [],
   };
-  for(let i = 0; i<8;i++){
-    res.children.push({title:tellme.getText(8-i)});
+  for (let i = 0; i < 8; i++) {
+    res.children.push({ title: tellme.getText(8 - i) });
   }
   return res;
 };
 
-InlineUniqueSchema.statics.testNewDoc = function(doc, n){
-  doc.should.have.property("title").and.equal(tellme.getText(0));
-  doc.should.have.nested.property("child.title").and.equal(tellme.getText(1));
-  if(!n){
-    doc.should.have.property("slugShort").and.equal(tellme.getSlug(0));
-    doc.should.have.property("slugCounter").and.equal(tellme.getSlug(0));
-    doc.should.have.nested.property("child.slugShort").and.equal(tellme.getSlug(1));
-    doc.should.have.nested.property("child.slugCounter").and.equal(tellme.getSlug(1));
-  }else{
-    doc.should.have.property("slugShort").and.match(tellme.getShortRegex(0));
-    doc.should.have.property("slugCounter").and.equal(tellme.getCounterSlug(0,n));
-    doc.should.have.nested.property("child.slugShort").and.match(tellme.getShortRegex(1));
-    doc.should.have.nested.property("child.slugCounter").and.equal(tellme.getCounterSlug(1,n));
+InlineUniqueSchema.statics.testNewDoc = function(doc, n) {
+  doc.should.have.property('title').and.equal(tellme.getText(0));
+  doc.should.have.nested.property('child.title').and.equal(tellme.getText(1));
+  if (!n) {
+    doc.should.have.property('slugShort').and.equal(tellme.getSlug(0));
+    doc.should.have.property('slugCounter').and.equal(tellme.getSlug(0));
+    doc.should.have.nested
+      .property('child.slugShort')
+      .and.equal(tellme.getSlug(1));
+    doc.should.have.nested
+      .property('child.slugCounter')
+      .and.equal(tellme.getSlug(1));
+  } else {
+    doc.should.have.property('slugShort').and.match(tellme.getShortRegex(0));
+    doc.should.have
+      .property('slugCounter')
+      .and.equal(tellme.getCounterSlug(0, n));
+    doc.should.have.nested
+      .property('child.slugShort')
+      .and.match(tellme.getShortRegex(1));
+    doc.should.have.nested
+      .property('child.slugCounter')
+      .and.equal(tellme.getCounterSlug(1, n));
   }
-  for(let i = 0; i<8;i++){
-    doc.should.have.nested.property(`children[${i}].title`).and.equal(tellme.getText(8-i));
-    if(!n){
-      doc.should.have.nested.property(`children[${i}].slugShort`).and.equal(tellme.getSlug(8-i));
-      doc.should.have.nested.property(`children[${i}].slugCounter`).and.equal(tellme.getSlug(8-i));
-    }else{
-      doc.should.have.nested.property(`children[${i}].slugShort`).and.match(tellme.getShortRegex(8-i));
-      doc.should.have.nested.property(`children[${i}].slugCounter`).and.equal(tellme.getCounterSlug(8-i,n));
+  for (let i = 0; i < 8; i++) {
+    doc.should.have.nested
+      .property(`children[${i}].title`)
+      .and.equal(tellme.getText(8 - i));
+    if (!n) {
+      doc.should.have.nested
+        .property(`children[${i}].slugShort`)
+        .and.equal(tellme.getSlug(8 - i));
+      doc.should.have.nested
+        .property(`children[${i}].slugCounter`)
+        .and.equal(tellme.getSlug(8 - i));
+    } else {
+      doc.should.have.nested
+        .property(`children[${i}].slugShort`)
+        .and.match(tellme.getShortRegex(8 - i));
+      doc.should.have.nested
+        .property(`children[${i}].slugCounter`)
+        .and.equal(tellme.getCounterSlug(8 - i, n));
     }
   }
 };
@@ -646,42 +783,62 @@ InlineUniqueSchema.statics.changeDocPaths = function(doc) {
   return { $set: doc };
 };
 
-InlineUniqueSchema.statics.changeDoc = function(doc){
+InlineUniqueSchema.statics.changeDoc = function(doc) {
   let res = {
-    title:tellme.getText(8),
-    child:{
-      title:tellme.getText(7)
+    title: tellme.getText(8),
+    child: {
+      title: tellme.getText(7),
     },
-    children:[]
+    children: [],
   };
-  for(let i = 0; i<8;i++){
-    res.children.push({title:tellme.getText(i)});
+  for (let i = 0; i < 8; i++) {
+    res.children.push({ title: tellme.getText(i) });
   }
   return _.merge(doc, res);
 };
 
-InlineUniqueSchema.statics.testChangedDoc = function(doc, n){
-  doc.should.have.property("title").and.equal(tellme.getText(8));
-  doc.should.have.nested.property("child.title").and.equal(tellme.getText(7));
-  if(!n){
-    doc.should.have.property("slugShort").and.equal(tellme.getSlug(8));
-    doc.should.have.property("slugCounter").and.equal(tellme.getSlug(8));
-    doc.should.have.nested.property("child.slugShort").and.equal(tellme.getSlug(7));
-    doc.should.have.nested.property("child.slugCounter").and.equal(tellme.getSlug(7));
-  }else{
-    doc.should.have.property("slugShort").and.match(tellme.getShortRegex(8));
-    doc.should.have.property("slugCounter").and.equal(tellme.getCounterSlug(8,n));
-    doc.should.have.nested.property("child.slugShort").and.match(tellme.getShortRegex(7));
-    doc.should.have.nested.property("child.slugCounter").and.equal(tellme.getCounterSlug(7,n));
+InlineUniqueSchema.statics.testChangedDoc = function(doc, n) {
+  doc.should.have.property('title').and.equal(tellme.getText(8));
+  doc.should.have.nested.property('child.title').and.equal(tellme.getText(7));
+  if (!n) {
+    doc.should.have.property('slugShort').and.equal(tellme.getSlug(8));
+    doc.should.have.property('slugCounter').and.equal(tellme.getSlug(8));
+    doc.should.have.nested
+      .property('child.slugShort')
+      .and.equal(tellme.getSlug(7));
+    doc.should.have.nested
+      .property('child.slugCounter')
+      .and.equal(tellme.getSlug(7));
+  } else {
+    doc.should.have.property('slugShort').and.match(tellme.getShortRegex(8));
+    doc.should.have
+      .property('slugCounter')
+      .and.equal(tellme.getCounterSlug(8, n));
+    doc.should.have.nested
+      .property('child.slugShort')
+      .and.match(tellme.getShortRegex(7));
+    doc.should.have.nested
+      .property('child.slugCounter')
+      .and.equal(tellme.getCounterSlug(7, n));
   }
-  for(let i = 0; i<8;i++){
-    doc.should.have.nested.property(`children[${i}].title`).and.equal(tellme.getText(i));
-    if(!n){
-      doc.should.have.nested.property(`children[${i}].slugShort`).and.equal(tellme.getSlug(i));
-      doc.should.have.nested.property(`children[${i}].slugCounter`).and.equal(tellme.getSlug(i));
-    }else{
-      doc.should.have.nested.property(`children[${i}].slugShort`).and.match(tellme.getShortRegex(i));
-      doc.should.have.nested.property(`children[${i}].slugCounter`).and.equal(tellme.getCounterSlug(i,n));
+  for (let i = 0; i < 8; i++) {
+    doc.should.have.nested
+      .property(`children[${i}].title`)
+      .and.equal(tellme.getText(i));
+    if (!n) {
+      doc.should.have.nested
+        .property(`children[${i}].slugShort`)
+        .and.equal(tellme.getSlug(i));
+      doc.should.have.nested
+        .property(`children[${i}].slugCounter`)
+        .and.equal(tellme.getSlug(i));
+    } else {
+      doc.should.have.nested
+        .property(`children[${i}].slugShort`)
+        .and.match(tellme.getShortRegex(i));
+      doc.should.have.nested
+        .property(`children[${i}].slugCounter`)
+        .and.equal(tellme.getCounterSlug(i, n));
     }
   }
 };

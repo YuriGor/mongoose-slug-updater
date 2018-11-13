@@ -16,8 +16,14 @@ const {
   SimpleChildSchema,
   SimpleParentSchema,
   UniqueChildSchema,
-  UniqueParentSchema
+  UniqueParentSchema,
 } = require('./NestedSchema.js');
+
+const {
+  ResourceGroupedUniqueCounter,
+  ResourceGroupedUniqueShortId,
+} = require('./Grouped.js');
+
 const CompoundUnique = new mongoose.Schema({
   type: { type: String },
   name: { type: String },
@@ -49,32 +55,6 @@ const ResourceCounter = new mongoose.Schema({
     unique: true,
     slug_padding_size: slug_padding_size,
     slug: 'title',
-  },
-});
-
-const ResourceGroupedUniqueCounter = new mongoose.Schema({
-  title: { type: String },
-  subtitle: { type: String },
-  group: { type: String },
-  uniqueSlug: {
-    type: String,
-    uniqueGroup: ['group'],
-    slug_padding_size: slug_padding_size,
-    slug: 'title',
-    index: true,
-  },
-});
-
-const ResourceGroupedUniqueShortId = new mongoose.Schema({
-  title: { type: String },
-  subtitle: { type: String },
-  otherField: { type: String },
-  group: { type: String },
-  uniqueSlug: {
-    type: String,
-    uniqueGroup: ['group'],
-    slug: 'title',
-    index: true,
   },
 });
 
@@ -147,5 +127,5 @@ module.exports = {
   SimpleInline,
   InlineUnique,
   UniqueChild,
-  UniqueParent
+  UniqueParent,
 };
