@@ -1,12 +1,18 @@
 # mongoose-slug-updater
 
-Mongoose plugin for creating and updating slugs based on mongoose schema fields.<br>
-Operations `save`, `update`, `updateOne`, `updateMany` and `findOneAndUpdate` are supported both for creation and modifying.<br>
-Nested documents and arrays are supported too with relative/absolute path to any field of the document.<br>
-$set deep paths to nested docs and arrays works too, but without other update operators yet.
-For example you can create a slug based on a document's title and author's name: _my-post-title-slim-shady_, or unique slugs based on just the title: _my-post-title-Nyiy4wW9l_.
-
-Update operators support and unique mode for nested slugs are coming soon.
+Sophisticated slug plugin for Mongoose.
+Features:
+- [Intuitive schema-based declaration](#basic-usage)
+- Single or [compound](#multiple-fields-to-create-the-slug) slugs, based on any fields of the document
+- [Nested docs and arrays support](#nested-docs-relative-and-absolute-paths)
+- [Relative or absolute paths to the related fields](#nested-docs-relative-and-absolute-paths)
+- Initial generation and [updating](#updating-slug-or-keeping-it-permanent) (or not if [permanent](#permanent-option)) on any change of related fields,
+- `create`, `save`, `update`, `updateOne`, `updateMany` or `findOneAndUpdate` methods supported, and you can [switch them on/off](#updating-slug-or-keeping-it-permanent).
+- [$set](#updating-by-deep-path-via-set-operator) update operator support with deep modification paths to any nested doc or array.
+- [Unique slugs](#unique-slug-field) (with unique index or not), collection-wide or [by group](#unique-slug-within-a-group), nested too.
+- Updating of unique slugs in case of changed related fields or group criteria.
+- [Counter](#example-counter) and [shortId](#example-random) styles of duplication conflict resolving.
+- Autoloading of missing related data required to build slug correctly.
 
 ## Installation
 
@@ -100,10 +106,11 @@ var mongoose = require('mongoose'),
 });
 ```
 
-If `unique` or `unique_slug` is set, the plugin searches in the mongo database, and if the slug already exists in the collection, it appends to the slug a separator (default: "-") and a random string (generated with the shortid module).
+If `unique` or `unique_slug` is set, the plugin searches in the mongo database, and if the slug already exists in the collection, it appends to the slug a separator (default: "-") and a random string (generated with the shortid module). <br>
+MongoDB supports unique index for nested arrays elements, but he check for duplication conflict only on per-document basis, so inside document duplicate nested array's elements are still allowed. <br>
+Same logic implemented for unique slugs of nested arrays too.
 
-**example random**
-
+#### example random
 ```js
 mongoose.model('Resource').create({
     title: "Am I wrong, fallin' in love with you!",
@@ -121,10 +128,9 @@ mongoose.model('Resource').create({
 }); // slug -> 'am-i-wrong-fallin-in-love-with-you-NJeskEPb5e'
 ```
 
-Alternatively you can modify this behaviour and instead of appending a random string, an incremental counter will be used. For that to happen, you must use the parameter _slug_padding_size_ specifying the total length of the counter:
+Alternatively you can modify this behaviour and instead of appending a random string, an incremental counter will be used. For that to happen, you must use the parameter `slug_padding_size` specifying the total length of the counter:
 
-**example counter**
-
+#### example counter
 ```js
 var mongoose = require('mongoose'),
     slug = require('mongoose-slug-updater'),
@@ -247,15 +253,16 @@ const HooksSchema = new mongoose.Schema({
 });
 ```
 
-Note, that flags will affect both creation and updating of documents,
-so if you disabled `save` and still want slug to be generated initially,
-use `upsert` option of `update***` methods.<br>
-On `update` and `updateMany` multiply affected records also handled, but be careful with performance,
+Note, that flags will affect both creation and updating of documents. <br>
+If you disabled `save` and still want slug to be generated initially, `create` method will not work, <br>
+becacuse mongoose emits `save` event both for `save` and `create` methods. <br>
+Use `upsert` option of `update***` methods instead.
+
+For `update` and `updateMany` methods multiply affected records also handled, but be careful with performance,
 because one-by-one iteration over affected documents may happen in case of unique slugs.<br>
-In this case `_id` field is required.<br>
-For `update*` family of operations additional queries may be performed, to retrieve data missing in the query.<br>
-For example if compound slug was affected by this update.<br>
-So if you already have necessary data - it's better for performance to specify all the fields listed in the compound slug and old slug value in update query.
+In this case `_id` field is required.
+
+For `update*` family of operations additional queries may be performed, to retrieve data missing in the query (fields not listed in the query but needed for compound or grouped unique slugs).<br>
 
 #### `permanent` option
 
@@ -460,7 +467,14 @@ This will work too:
     }
   );
 ```
-All the slugs which depend on modified titles will be found and regenerated.
+All the slugs which depend on modified titles will be found and regenerated.<br>
+This is recommended way to do partial modifications.<br>
+When you perform updates by object value instead of path:value list,<br>
+unobvious data loss may happen for nested docs or arrays, if they contain slugs affected by your modification.<br>
+Plugin always checks will current update operation be made with $set operator or not, and adds extra slug fields to the query as an object fields or $set paths accordingly.
+
+So if you do have whole document you want to change - better use `save`,<br>
+but if you dont have it, but you need to update some particular fields - it's more safe to use $set and paths:values.
 
 ### Choose your own options
 
@@ -497,12 +511,12 @@ Merged and fixed `uniqueGroup` feature by [rickogden](https://github.com/rickogd
 
 `update`, `updateOne`, `updateMany` and `findOneAndUpdate` operations support implemented.
 
-Nested docs and arrays support implemented for non-unique slugs.
+Nested docs and arrays support implemented.
 
 Absolute and relative paths added.
 
 Updating with $set operator and deep paths now works too.
 
-All the update operators and unique nested slugs will be implemented soon.
+All the update operators will be implemented soon.
 
 Plugin rewritten with modern js and a lot of tests were added.
