@@ -6,5 +6,5 @@ module.exports = {
     truncate: 120,
   },
   nIterations: 15,
-  slug_padding_size: 4,
+  slugPaddingSize: 4,
 };

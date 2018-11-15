@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 const tellme = require('./../tellme');
-const { options, slug_padding_size, nIterations } = require('./../options');
+const { options, slugPaddingSize, nIterations } = require('./../options');
 
 const SubChildSchema = new mongoose.Schema({
   title: { type: String },
@@ -362,14 +362,14 @@ const SimpleParentSchema = new mongoose.Schema({
 const UniqueChildSchema = new mongoose.Schema({
   title: { type: String },
   slugShort: { type: String, slug: 'title', unique:true },
-  slugCounter: { type: String, slug: 'title', unique:true, slug_padding_size },
+  slugCounter: { type: String, slug: 'title', unique:true, slugPaddingSize },
 });
 
 const UniqueParentSchema = new mongoose.Schema({
   n: { type: Number },
   title: { type: String },
   slugShort: { type: String, slug: 'title', unique:true },
-  slugCounter: { type: String, slug: 'title', unique:true, slug_padding_size },
+  slugCounter: { type: String, slug: 'title', unique:true, slugPaddingSize },
   child: UniqueChildSchema,
   children: [UniqueChildSchema],
 });

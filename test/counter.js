@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 
-const { nIterations, slug_padding_size, Counter } = require('./model');
+const { nIterations, slugPaddingSize, Counter } = require('./model');
 
 const tellme = require('./tellme');
 /* Tests */

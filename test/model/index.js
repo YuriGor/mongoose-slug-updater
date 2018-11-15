@@ -1,6 +1,6 @@
 'use strict';
 const mongoose = require('mongoose');
-const { options, slug_padding_size, nIterations } = require('./../options');
+const { options, slugPaddingSize, nIterations } = require('./../options');
 const slugGenerator = require('../../.');
 mongoose.plugin(slugGenerator, options);
 
@@ -42,7 +42,7 @@ const ResourceShortId = new mongoose.Schema({
   otherField: { type: String },
   slug: { type: String, slug: ['title', 'subtitle'] },
   uniqueSlug: { type: String, unique: true, slug: 'title' },
-  forcedSlug: { type: String, slug: ['subtitle'], force_id: true },
+  forcedSlug: { type: String, slug: ['subtitle'], forceIdSlug: true },
 });
 
 const ResourceCounter = new mongoose.Schema({
@@ -53,7 +53,7 @@ const ResourceCounter = new mongoose.Schema({
   uniqueSlug: {
     type: String,
     unique: true,
-    slug_padding_size: slug_padding_size,
+    slugPaddingSize: slugPaddingSize,
     slug: 'title',
   },
 });
@@ -68,21 +68,21 @@ const ResourcePermanent = new mongoose.Schema({
     type: String,
     slug: 'subtitle',
     permanent: true,
-    slug_padding_size: slug_padding_size,
+    slugPaddingSize: slugPaddingSize,
   },
 });
 
 const HooksSchema = new mongoose.Schema({
   title: { type: String },
   slug: { type: String, slug: 'title' },
-  slugNoSave: { type: String, slug: 'title', on: { save: false } },
-  slugNoUpdate: { type: String, slug: 'title', on: { update: false } },
-  slugNoUpdateOne: { type: String, slug: 'title', on: { updateOne: false } },
-  slugNoUpdateMany: { type: String, slug: 'title', on: { updateMany: false } },
+  slugNoSave: { type: String, slug: 'title', slugOn: { save: false } },
+  slugNoUpdate: { type: String, slug: 'title', slugOn: { update: false } },
+  slugNoUpdateOne: { type: String, slug: 'title', slugOn: { updateOne: false } },
+  slugNoUpdateMany: { type: String, slug: 'title', slugOn: { updateMany: false } },
   slugNoFindOneAndUpdate: {
     type: String,
     slug: 'title',
-    on: { findOneAndUpdate: false },
+    slugOn: { findOneAndUpdate: false },
   },
 });
 

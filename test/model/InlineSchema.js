@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 const tellme = require('./../tellme');
-const { options, slug_padding_size, nIterations } = require('./../options');
+const { options, slugPaddingSize, nIterations } = require('./../options');
 
 const InlineSchema = new mongoose.Schema({
   n: { type: Number },
@@ -14,7 +14,7 @@ const InlineSchema = new mongoose.Schema({
   // root slug with relative path to root title
   slug: { type: String, slug: 'title' },
   slugShort: { type: String, slug: 'title', unique: true },
-  slugCounter: { type: String, slug: 'title', unique: true, slug_padding_size },
+  slugCounter: { type: String, slug: 'title', unique: true, slugPaddingSize },
   // root slug with  absolute path to root title
   absoluteSlug: { type: String, slug: '/title' },
   // root slug with relative path to child title
@@ -30,7 +30,7 @@ const InlineSchema = new mongoose.Schema({
     type: String,
     slug: '/child.title',
     unique: true,
-    slug_padding_size,
+    slugPaddingSize,
   },
   // root slug with relative path to child's subchild title
   subChildSlug: { type: String, slug: 'child.subChild.title' },
@@ -48,7 +48,7 @@ const InlineSchema = new mongoose.Schema({
     type: String,
     slug: 'children.4.title',
     unique: true,
-    slug_padding_size,
+    slugPaddingSize,
   },
   // root slug with relative path to the title of 4th subChildren' element of first children array element
   subChildrenSlug3: { type: String, slug: 'children.0.subChildren.3.title' },
@@ -72,7 +72,7 @@ const InlineSchema = new mongoose.Schema({
     type: String,
     slug: 'children.0.subChildren.2.subChild.title',
     unique: true,
-    slug_padding_size,
+    slugPaddingSize,
   },
   child: {
     title: { type: String },
@@ -129,7 +129,7 @@ const InlineSchema = new mongoose.Schema({
           type: String,
           slug: ':title',
           unique: true,
-          slug_padding_size,
+          slugPaddingSize,
         },
         // two parents up is a root
         relativeGrandParentSlug: { type: String, slug: '::title' },
@@ -684,7 +684,7 @@ const InlineUniqueSchema = new mongoose.Schema({
   n: { type: Number },
   title: { type: String },
   slugShort: { type: String, unique: true, slug: 'title' },
-  slugCounter: { type: String, slug: 'title', unique: true, slug_padding_size },
+  slugCounter: { type: String, slug: 'title', unique: true, slugPaddingSize },
   child: {
     title: { type: String },
     slugShort: { type: String, slug: 'title', unique: true },
@@ -692,7 +692,7 @@ const InlineUniqueSchema = new mongoose.Schema({
       type: String,
       slug: 'title',
       unique: true,
-      slug_padding_size,
+      slugPaddingSize,
     },
   },
   children: [
@@ -703,7 +703,7 @@ const InlineUniqueSchema = new mongoose.Schema({
         type: String,
         slug: 'title',
         unique: true,
-        slug_padding_size,
+        slugPaddingSize,
       },
     },
   ],

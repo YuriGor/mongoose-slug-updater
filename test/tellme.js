@@ -1,6 +1,6 @@
 'use strict';
 const _ = require('lodash');
-const { options, slug_padding_size } = require('./options');
+const { options, slugPaddingSize } = require('./options');
 const slugify = require('speakingurl');
 
 // https://www.youtube.com/watch?v=--UPSacwPDA
@@ -31,7 +31,7 @@ const dummyRegex = slug.map(s => new RegExp('^' + s + '$'));
 function getCounterSlug(index, n) {
   if(n)
     return (
-      getSlug(index) + options.separator + _.padStart(n, slug_padding_size, '0')
+      getSlug(index) + options.separator + _.padStart(n, slugPaddingSize, '0')
     );
   return getSlug(index);
 }

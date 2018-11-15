@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 const tellme = require('./../tellme');
-const { options, slug_padding_size, nIterations } = require('./../options');
+const { options, slugPaddingSize, nIterations } = require('./../options');
 
 const ResourceGroupedUniqueCounter = new mongoose.Schema({
   title: { type: String },
@@ -13,8 +13,8 @@ const ResourceGroupedUniqueCounter = new mongoose.Schema({
   group: { type: String },
   uniqueSlug: {
     type: String,
-    uniqueGroup: ['group'],
-    slug_padding_size: slug_padding_size,
+    uniqueGroupSlug: ['group'],
+    slugPaddingSize: slugPaddingSize,
     slug: 'title',
     index: true,
   },
@@ -23,8 +23,8 @@ const ResourceGroupedUniqueCounter = new mongoose.Schema({
       title: { type: String },
       globalGroupSlug: {
         type: String,
-        uniqueGroup: ['/group'],
-        slug_padding_size,
+        uniqueGroupSlug: ['/group'],
+        slugPaddingSize,
         slug: 'title',
         index: true,
       }
@@ -39,7 +39,7 @@ const ResourceGroupedUniqueShortId = new mongoose.Schema({
   group: { type: String },
   uniqueSlug: {
     type: String,
-    uniqueGroup: ['group'],
+    uniqueGroupSlug: ['group'],
     slug: 'title',
     index: true,
   },
@@ -48,7 +48,7 @@ const ResourceGroupedUniqueShortId = new mongoose.Schema({
       title: { type: String },
       globalGroupSlug: {
         type: String,
-        uniqueGroup: ['/group'],
+        uniqueGroupSlug: ['/group'],
         slug: 'title',
         index: true,
       }

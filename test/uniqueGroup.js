@@ -9,7 +9,7 @@ const mongoose = require('mongoose'),
 
 const {
   nIterations,
-  slug_padding_size,
+  slugPaddingSize,
   GroupedUniqueCounter,
   GroupedUniqueShortId,
 } = require('./model');
