@@ -107,7 +107,7 @@ var mongoose = require('mongoose'),
 });
 ```
 
-If `unique` or `unique_slug` is set, the plugin searches in the mongo database, and if the slug already exists in the collection, it appends to the slug a separator (default: "-") and a random string (generated with the shortid module). <br>
+If `unique` or `uniqueSlug` is set, the plugin searches in the mongo database, and if the slug already exists in the collection, it appends to the slug a separator (default: "-") and a random string (generated with the shortid module). <br>
 MongoDB supports unique index for nested arrays elements, but he check for duplication conflict only on per-document basis, so inside document duplicate nested array's elements are still allowed. <br>
 Same logic implemented for unique slugs of nested arrays too.
 
@@ -129,7 +129,7 @@ mongoose.model('Resource').create({
 }); // slug -> 'am-i-wrong-fallin-in-love-with-you-NJeskEPb5e'
 ```
 
-Alternatively you can modify this behaviour and instead of appending a random string, an incremental counter will be used. For that to happen, you must use the parameter `slug_padding_size` specifying the total length of the counter:
+Alternatively you can modify this behaviour and instead of appending a random string, an incremental counter will be used. For that to happen, you must use the parameter `slugPaddingSize` specifying the total length of the counter:
 
 #### example counter
 ```js
@@ -140,7 +140,7 @@ var mongoose = require('mongoose'),
     schema = new Schema({
         title: String,
         subtitle: String,
-        slug: { type: String, slug: ["title", "subtitle"], slug_padding_size: 4,  unique: true }
+        slug: { type: String, slug: ["title", "subtitle"], slugPaddingSize: 4,  unique: true }
 });
 
 mongoose.model('Resource').create({
@@ -160,10 +160,10 @@ mongoose.model('Resource').create({
 ```
 
 If you don't want to define your field as unique for some reasons, but still need slug to be unique,<br>
-you can use `unique_slug:true` option instead of `unique`.<br>
+you can use `uniqueSlug:true` option instead of `unique`.<br>
 This option will not cause index creation, but still will be considered by the plugin.
 
-`force_id` option will append shortId even if no duplicates were found.<br>
+`forceIdSlug` option will append shortId even if no duplicates were found.<br>
 This is useful for applications with high chance of concurrent modification of unique fields.<br>
 
 Check for conflict made by plugin is not atomic with subsequent insert/update operation,<br>
@@ -171,16 +171,16 @@ so there is a possibility of external change of data in the moment between check
 If this happened, mongo will throw unique index violation error.<br>
 Chances of such case higher for counter unique mode, but with shortId this is possible too.<br>
 You can just retry operation, so plugin will check collection again and regenerate correct unique slug.<br>
-Or you can set `force_id` option - this will solve the problem completely, but you will pay for this by less readabilty of your slugs, because they will *always* be appended with random string.
+Or you can set `forceIdSlug` option - this will solve the problem completely, but you will pay for this by less readabilty of your slugs, because they will *always* be appended with random string.
 
 In most cases write operations not so frequent to care about possible conflicts.
 
-note: `force_id` option will also overwite `unique` to the `true`, and `slug_padding_size` option will be ignored.
+note: `forceIdSlug` option will also overwite `unique` to the `true`, and `slugPaddingSize` option will be ignored.
 
 ### Unique slug within a group
 
 Sometimes you only want slugs to be unique within a specific group.<br>
-This is done with the `uniqueGroup` property which is an array of fields to group by:
+This is done with the `uniqueGroupSlug` property which is an array of fields to group by:
 
 **example unique per group (using the field named 'group')**
 
@@ -191,8 +191,8 @@ ResourceGroupedUnique = new mongoose.Schema({
     group: { type: String },
     uniqueSlug: {
         type: String,
-        uniqueGroup: ['group'],
-        slug_padding_size: 4,
+        uniqueGroupSlug: ['group'],
+        slugPaddingSize: 4,
         slug: 'title',
         index: true,
     },
@@ -237,20 +237,20 @@ const HooksSchema = new mongoose.Schema({
         type: String,
         slug: 'title',
         //by default all hooks are enabled
-        //on:{ save: true, update: true, updateOne: true, updateMany: true, findOneAndUpdate: true }
+        //slugOn:{ save: true, update: true, updateOne: true, updateMany: true, findOneAndUpdate: true }
     },
-    slugNoSave: { type: String, slug: 'title', on: { save: false } },
-    slugNoUpdate: { type: String, slug: 'title', on: { update: false } },
-    slugNoUpdateOne: { type: String, slug: 'title', on: { updateOne: false } },
+    slugNoSave: { type: String, slug: 'title', slugOn: { save: false } },
+    slugNoUpdate: { type: String, slug: 'title', slugOn: { update: false } },
+    slugNoUpdateOne: { type: String, slug: 'title', slugOn: { updateOne: false } },
     slugNoUpdateMany: {
         type: String,
         slug: 'title',
-        on: { updateMany: false },
+        slugOn: { updateMany: false },
     },
     slugNoFindOneAndUpdate: {
         type: String,
         slug: 'title',
-        on: { findOneAndUpdate: false },
+        slugOn: { findOneAndUpdate: false },
     },
 });
 ```
@@ -281,7 +281,7 @@ ResourcePermanent = new mongoose.Schema({
         type: String,
         slug: 'subtitle',
         permanent: true, //permanent option
-        slug_padding_size: 4,
+        slugPaddingSize: 4,
     },
 });
 ```
@@ -488,7 +488,8 @@ var mongoose = require('mongoose'),
     options = {
         separator: "-",
         lang: "en",
-        truncate: 120
+        truncate: 120,
+        backwardCompatible: true//suppor for the old options names used in the mongoose-slug-generator
     },
     mongoose.plugin(slug, options),
     Schema = mongoose.Schema,
@@ -509,7 +510,7 @@ This plugin is supported by [Yuri Gor](http://yurigor.com/)
 
 This plugin was initially forked from [mongoose-slug-generator](https://github.com/Kubide/mongoose-slug-generator), which is not maintained currently.
 
-Merged and fixed `uniqueGroup` feature by [rickogden](https://github.com/rickogden).
+Merged and fixed `uniqueGroupSlug` feature by [rickogden](https://github.com/rickogden).
 
 `update`, `updateOne`, `updateMany` and `findOneAndUpdate` operations support implemented.
 
