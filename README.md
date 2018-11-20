@@ -321,7 +321,7 @@ mongoose.model('UniqueNestedSchema').create({
 });
 ```
 
-In case of change unique slug related fields (source fields from `slug` option or group criteria from uniqueGroupSlug) <br>
+In case of change unique slug related fields (source fields from `slug` option or group criteria from `uniqueGroupSlug`) <br>
 slug will be regenerated considering latest existing duplicate. Presence or lack of the older duplicates, including original slug, will not be taken into account.
 
 ### Updating slug or keeping it permanent
