@@ -22,7 +22,8 @@ const {
 const {
   ResourceGroupedUniqueCounter,
   ResourceGroupedUniqueShortId,
-} = require('./Grouped.js');
+  UniqueNestedSchema,
+} = require('./Unique.js');
 
 const CompoundUnique = new mongoose.Schema({
   type: { type: String },
@@ -77,8 +78,16 @@ const HooksSchema = new mongoose.Schema({
   slug: { type: String, slug: 'title' },
   slugNoSave: { type: String, slug: 'title', slugOn: { save: false } },
   slugNoUpdate: { type: String, slug: 'title', slugOn: { update: false } },
-  slugNoUpdateOne: { type: String, slug: 'title', slugOn: { updateOne: false } },
-  slugNoUpdateMany: { type: String, slug: 'title', slugOn: { updateMany: false } },
+  slugNoUpdateOne: {
+    type: String,
+    slug: 'title',
+    slugOn: { updateOne: false },
+  },
+  slugNoUpdateMany: {
+    type: String,
+    slug: 'title',
+    slugOn: { updateMany: false },
+  },
   slugNoFindOneAndUpdate: {
     type: String,
     slug: 'title',
@@ -109,7 +118,7 @@ const SimpleChild = mongoose.model('SimpleChildSchema', SimpleChildSchema);
 const SimpleParent = mongoose.model('SimpleParentSchema', SimpleParentSchema);
 const UniqueChild = mongoose.model('UniqueChildSchema', UniqueChildSchema);
 const UniqueParent = mongoose.model('UniqueParentSchema', UniqueParentSchema);
-
+const UniqueNested = mongoose.model('UniqueNestedSchema', UniqueNestedSchema);
 module.exports = {
   CompoundU,
   ShortId,
@@ -128,4 +137,5 @@ module.exports = {
   InlineUnique,
   UniqueChild,
   UniqueParent,
+  UniqueNested,
 };

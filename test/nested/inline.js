@@ -11,6 +11,7 @@ const { nIterations, Inline, SimpleInline } = require('./../model');
 const tellme = require('./../tellme');
 
 describe('Inline Docs', function() {
+  this.timeout(5000);
   beforeEach(async () => {
     await Inline.remove({});
     await SimpleInline.remove({});

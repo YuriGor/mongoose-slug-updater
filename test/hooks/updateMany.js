@@ -193,6 +193,7 @@ describe('update', function() {
   it('Update multiply slugs', async () => {
     let docs = [];
     for (let i = 0; i < 10; i++) {
+      // console.log(i);
       docs[i] = await ShortId.create({
         title: tellme.getText(0),
         subtitle: tellme.getText(1),

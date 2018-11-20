@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
   should = chai.should(),
   assert = require('assert');
 const tellme = require('./../tellme');
-const { options, slugPaddingSize, nIterations } = require('./../options');
+const { options, slugPaddingSize } = require('./../options');
 
 const SubChildSchema = new mongoose.Schema({
   title: { type: String },

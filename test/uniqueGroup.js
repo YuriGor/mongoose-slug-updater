@@ -54,7 +54,7 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(2, 0));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 0));
+      .and.equal(tellme.getCounterSlug(2, 1));
     // console.log(doc);
   });
 
@@ -85,10 +85,10 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(0, 1));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 1));
+      .and.equal(tellme.getCounterSlug(2, 2));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 1));
+      .and.equal(tellme.getCounterSlug(2, 3));
   });
 
   it("Create new resource for second group and check it's generated as normal", async () => {
@@ -119,7 +119,7 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(2, 0));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 0));
+      .and.equal(tellme.getCounterSlug(2, 1));
   });
 
   it("Create new resource for second group and check it's generated as with increment", async () => {
@@ -150,10 +150,10 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(0, 1));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 1));
+      .and.equal(tellme.getCounterSlug(2, 2));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 1));
+      .and.equal(tellme.getCounterSlug(2, 3));
   });
 
   it('Change group and check slug counter was incremented accordingly', async () => {
@@ -174,10 +174,10 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(0, 1));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 1));
+      .and.equal(tellme.getCounterSlug(2, 2));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 1));
+      .and.equal(tellme.getCounterSlug(2, 3));
     doc.group = 'group 1';
     doc = await doc.save();
 
@@ -194,10 +194,10 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(0, 2));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 2));
+      .and.equal(tellme.getCounterSlug(2, 4));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 2));
+      .and.equal(tellme.getCounterSlug(2, 5));
   });
 
   it('UpdateOne group and check slug counter was incremented accordingly', async () => {
@@ -227,10 +227,10 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(0, 1));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 1));
+      .and.equal(tellme.getCounterSlug(2, 2));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 1));
+      .and.equal(tellme.getCounterSlug(2, 3));
 
     await GroupedUniqueCounter.updateOne(
       { _id: doc._id },
@@ -250,10 +250,10 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(0, 3));
     editedDoc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 3));
+      .and.equal(tellme.getCounterSlug(2, 6));
     editedDoc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 3));
+      .and.equal(tellme.getCounterSlug(2, 7));
   });
 
   it('Change group to brand new and check slug was updated to normal', async () => {
@@ -275,10 +275,10 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(0, 2));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 2));
+      .and.equal(tellme.getCounterSlug(2, 4));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 2));
+      .and.equal(tellme.getCounterSlug(2, 5));
 
     doc.group = 'group 3';
     doc = await doc.save();
@@ -297,7 +297,7 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(2, 0));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 0));
+      .and.equal(tellme.getCounterSlug(2, 1));
   });
 
   it('UpdateOne group to brand new and check slug was updated to normal', async () => {
@@ -319,10 +319,10 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(0, 3));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 3));
+      .and.equal(tellme.getCounterSlug(2, 6));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 3));
+      .and.equal(tellme.getCounterSlug(2, 7));
 
     await GroupedUniqueCounter.updateOne(
       { _id: doc._id },
@@ -344,7 +344,7 @@ describe('Grouped Resources (Counter)', function() {
       .and.equal(tellme.getCounterSlug(2, 0));
     editedDoc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.equal(tellme.getCounterSlug(2, 0));
+      .and.equal(tellme.getCounterSlug(2, 1));
   });
 });
 
@@ -387,7 +387,7 @@ describe('Grouped Resources (ShortId)', function() {
       .and.match(tellme.getShortRegex(2, 0));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.match(tellme.getShortRegex(2, 0));
+      .and.match(tellme.getShortRegex(2, 1));
   });
 
   it("Create new resource for grouped ID and check it's generated with id postfix", async () => {
@@ -417,10 +417,10 @@ describe('Grouped Resources (ShortId)', function() {
       .and.match(tellme.getShortRegex(0, 1));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.match(tellme.getShortRegex(2, 1));
+      .and.match(tellme.getShortRegex(2, 2));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.match(tellme.getShortRegex(2, 1));
+      .and.match(tellme.getShortRegex(2, 3));
   });
 
   it("Create new resource for second group and check it's generated as normal", async () => {
@@ -453,7 +453,7 @@ describe('Grouped Resources (ShortId)', function() {
       .and.match(tellme.getShortRegex(2, 0));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.match(tellme.getShortRegex(2, 0));
+      .and.match(tellme.getShortRegex(2, 1));
   });
 
   it("Create new resource for second group and check it's generated with id postfix", async () => {
@@ -484,10 +484,10 @@ describe('Grouped Resources (ShortId)', function() {
       .and.match(tellme.getShortRegex(0, 1));
     doc.should.have.nested
       .property('children[0].globalGroupSlug')
-      .and.match(tellme.getShortRegex(2, 1));
+      .and.match(tellme.getShortRegex(2, 2));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.match(tellme.getShortRegex(2, 1));
+      .and.match(tellme.getShortRegex(2, 3));
   });
 
   it('Change group and check slug was appended with id postfix', async () => {
@@ -540,7 +540,7 @@ describe('Grouped Resources (ShortId)', function() {
     }
   });
 
-  it('updateOne group and check slug counter was appended with id postfix', async () => {
+  it('updateOne group and check slug was appended with id postfix', async () => {
     let doc = await GroupedUniqueShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
@@ -641,7 +641,7 @@ describe('Grouped Resources (ShortId)', function() {
       .and.match(tellme.getShortRegex(2, 0));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.match(tellme.getShortRegex(2, 0));
+      .and.match(tellme.getShortRegex(2, 1));
   });
 
   it('UpdateOne group to brand new and check slug was updated to normal', async () => {
@@ -670,6 +670,6 @@ describe('Grouped Resources (ShortId)', function() {
       .and.match(tellme.getShortRegex(2, 0));
     doc.should.have.nested
       .property('children[1].globalGroupSlug')
-      .and.match(tellme.getShortRegex(2, 0));
+      .and.match(tellme.getShortRegex(2, 1));
   });
 });

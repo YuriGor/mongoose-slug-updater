@@ -489,7 +489,7 @@ var mongoose = require('mongoose'),
         separator: "-",
         lang: "en",
         truncate: 120,
-        backwardCompatible: true//suppor for the old options names used in the mongoose-slug-generator
+        backwardCompatible: true//support for the old options names used in the mongoose-slug-generator
     },
     mongoose.plugin(slug, options),
     Schema = mongoose.Schema,
