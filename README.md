@@ -289,8 +289,6 @@ ResourcePermanent = new mongoose.Schema({
 ### Nested docs. Relative and absolute paths.
 Nested docs and arrays declared inline right in the scheme or as a nested schemas declared separately are also supported.
 
-Non-unique nested slugs are currently implemented. Unique nested slugs are coming soon.
-
 Slug fields can be declared as relative or absolute(starting with slash) path to any point of current document.
 
 Since MongoDB uses dot path notation, colon `:` symbol used for relative paths as a reference to the parent, same as double dot `..` for file system paths.
