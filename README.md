@@ -224,7 +224,7 @@ mongoose.model('ResourceGroupedUnique').create({
 **Important: you must not have a `unique: true` option, but it's a good idea to have an `index: true` option.**
 
 ### Nested unique slugs
-MongoDB supports unique index for nested arrays elements, but he check for duplication conflict only on per-document basis, so inside document duplicate nested array's elements are still allowed. <br>
+MongoDB supports unique index for nested arrays elements, but he checks for duplication conflicts only on per-document basis, so inside document duplicate nested array's elements are still allowed. <br>
 mongoose-slug-updater works differently. It checks slug for duplicates both in current documentts's nested array and in other documents, considering uniqueGroupSlug option, if specified.
 
 #### example of nested unique slugs
@@ -322,7 +322,7 @@ mongoose.model('UniqueNestedSchema').create({
 ```
 
 In case of change unique slug related fields (source fields from `slug` option or group criteria from uniqueGroupSlug) <br>
-slugs will be regenerated considering latest existing duplicate. Presence or lack of the older duplicates, including original slug, will not be taken into account.
+slug will be regenerated considering latest existing duplicate. Presence or lack of the older duplicates, including original slug, will not be taken into account.
 
 ### Updating slug or keeping it permanent
 
