@@ -107,9 +107,7 @@ var mongoose = require('mongoose'),
 });
 ```
 
-If `unique` or `uniqueSlug` is set, the plugin searches in the mongo database, and if the slug already exists in the collection, it appends to the slug a separator (default: "-") and a random string (generated with the shortid module). <br>
-MongoDB supports unique index for nested arrays elements, but he check for duplication conflict only on per-document basis, so inside document duplicate nested array's elements are still allowed. <br>
-Same logic implemented for unique slugs of nested arrays too.
+If `unique` or `uniqueSlug` is set, the plugin searches in the mongo database, and if the slug already exists in the collection, it appends to the slug a separator (default: "-") and a random string (generated with the shortid module).
 
 #### example random
 ```js
@@ -182,7 +180,7 @@ note: `forceIdSlug` option will also overwite `unique` to the `true`, and `slugP
 Sometimes you only want slugs to be unique within a specific group.<br>
 This is done with the `uniqueGroupSlug` property which is an array of fields to group by:
 
-**example unique per group (using the field named 'group')**
+#### example unique per group (using the field named 'group')
 
 ```js
 ResourceGroupedUnique = new mongoose.Schema({
@@ -224,6 +222,107 @@ mongoose.model('ResourceGroupedUnique').create({
 ```
 
 **Important: you must not have a `unique: true` option, but it's a good idea to have an `index: true` option.**
+
+### Nested unique slugs
+MongoDB supports unique index for nested arrays elements, but he check for duplication conflict only on per-document basis, so inside document duplicate nested array's elements are still allowed. <br>
+mongoose-slug-updater works differently. It checks slug for duplicates both in current documentts's nested array and in other documents, considering uniqueGroupSlug option, if specified.
+
+#### example of nested unique slugs
+```js
+const UniqueNestedSchema = new mongoose.Schema({
+  children: [
+    {
+      subchildren: [
+        {
+          title: { type: String },
+          slug: {
+            type: String,
+            slug: 'title',
+            unique: true // 'global' unique slug
+            slugPaddingSize: 4,
+          },
+          slugLocal: {
+            type: String,
+            slug: 'title',
+            index: true,
+            slugPaddingSize: 4,
+            uniqueGroupSlug: '/_id',// slug unique within current document
+          },
+        },
+      ],
+    },
+  ],
+});
+```
+```js
+mongoose.model('UniqueNestedSchema').create({
+  children:[
+    {
+      subchildren:[
+        {
+          title: "Am I wrong, fallin' in love with you!"
+          // slug       -> 'am-i-wrong-fallin-in-love-with-you'
+          // slugLocal  -> 'am-i-wrong-fallin-in-love-with-you'
+        },
+        {
+          title: "Am I wrong, fallin' in love with you!"
+          // slug       -> 'am-i-wrong-fallin-in-love-with-you-0001'
+          // slugLocal  -> 'am-i-wrong-fallin-in-love-with-you-0001'
+        },
+      ]
+    },
+    {
+      subchildren:[
+        {
+          title: "Am I wrong, fallin' in love with you!"
+          // slug       -> 'am-i-wrong-fallin-in-love-with-you-0002'
+          // slugLocal  -> 'am-i-wrong-fallin-in-love-with-you-0002'
+        },
+        {
+          title: "Am I wrong, fallin' in love with you!"
+          // slug       -> 'am-i-wrong-fallin-in-love-with-you-0003'
+          // slugLocal  -> 'am-i-wrong-fallin-in-love-with-you-0003'
+        },
+      ]
+    },
+  ]
+});
+mongoose.model('UniqueNestedSchema').create({
+  children:[
+    {
+      subchildren:[
+        {
+          title: "Am I wrong, fallin' in love with you!"
+          // slug       -> 'am-i-wrong-fallin-in-love-with-you-0004'
+          // slugLocal  -> 'am-i-wrong-fallin-in-love-with-you'
+        },
+        {
+          title: "Am I wrong, fallin' in love with you!"
+          // slug       -> 'am-i-wrong-fallin-in-love-with-you-0005'
+          // slugLocal  -> 'am-i-wrong-fallin-in-love-with-you-0001'
+        },
+      ]
+    },
+    {
+      subchildren:[
+        {
+          title: "Am I wrong, fallin' in love with you!"
+          // slug       -> 'am-i-wrong-fallin-in-love-with-you-0006'
+          // slugLocal  -> 'am-i-wrong-fallin-in-love-with-you-0002'
+        },
+        {
+          title: "Am I wrong, fallin' in love with you!"
+          // slug       -> 'am-i-wrong-fallin-in-love-with-you-0007'
+          // slugLocal  -> 'am-i-wrong-fallin-in-love-with-you-0003'
+        },
+      ]
+    },
+  ]
+});
+```
+
+In case of change unique slug related fields (source fields from `slug` option or group criteria from uniqueGroupSlug) <br>
+slugs will be regenerated considering latest existing duplicate. Presence or lack of the older duplicates, including original slug, will not be taken into account.
 
 ### Updating slug or keeping it permanent
 
