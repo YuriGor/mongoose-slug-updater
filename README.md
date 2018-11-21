@@ -2,6 +2,8 @@
 
 Sophisticated slugifier plugin for Mongoose.
 
+[![npm](https://img.shields.io/npm/v/mongoose-slug-updater.svg?style=plastic)](https://www.npmjs.com/package/mongoose-slug-updater)
+
 Features:
 - [Intuitive schema-based declaration](#basic-usage)
 - Single or [compound](#multiple-fields-to-create-the-slug) slugs, based on any fields of the document
