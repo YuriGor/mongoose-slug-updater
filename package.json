@@ -1,6 +1,6 @@
 {
   "name": "mongoose-slug-updater",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Schema-based slug plugin for Mongoose - single/compound - unique over collection/group - nested docs/arrays - relative/abs paths - sync on change: create/save/update/updateOne/updateMany/findOneAndUpdate tracked - $set operator - counter/shortId",
   "main": "index.js",
   "directories": {
@@ -9,7 +9,7 @@
   "scripts": {
     "prepublish": "npm run test",
     "test": "nyc mocha  --reporter spec",
-    "report":"nyc --reporter=html --reporter=text mocha",
+    "report": "nyc --reporter=html --reporter=text mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "dev": "nodemon ./node_modules/.bin/mocha --reporter min --no-deprecation",
     "devinline": "nodemon ./node_modules/.bin/mocha --reporter min -g '.*inline.*' --no-deprecation",
