@@ -54,13 +54,13 @@
   "dependencies": {
     "deepdash": "^1.5.0",
     "shortid": "^2.2.14",
-    "speakingurl": "^7.0.0"
+    "speakingurl": "^14.0.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^5.8.0",
     "mocha": "^5.2.0",
-    "mongodb-memory-server": "^2.7.0",
+    "mongodb-memory-server": "^2.7.2",
     "mongoose": "^5.3.10",
     "nodemon": "^1.18.6"
   }
