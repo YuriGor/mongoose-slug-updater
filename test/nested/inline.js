@@ -42,6 +42,9 @@ describe('Inline Docs', function() {
           {
             title: tellme.getText(2),
           },
+          {
+            title: tellme.getText(3),
+          },
         ],
       },
       { upsert: true }
@@ -56,6 +59,55 @@ describe('Inline Docs', function() {
     doc.should.have.nested
       .property(`children[0].slug`)
       .and.equal(tellme.getSlug(2));
+    doc.should.have.nested
+      .property(`children[1].title`)
+      .and.equal(tellme.getText(3));
+    doc.should.have.nested
+      .property(`children[1].slug`)
+      .and.equal(tellme.getSlug(3));
+    await SimpleInline.updateOne(
+      {_id:doc._id},
+      {
+        $set:{
+          'children.1.title': tellme.getText(4),
+        }
+      }
+    );
+    doc = await SimpleInline.findById(doc._id);
+    // console.log(doc);
+    doc.should.have.property('slug').and.equal(tellme.getSlug(0));
+    doc.should.have.nested.property('child.title').and.equal(tellme.getText(1));
+    doc.should.have.nested.property('child.slug').and.equal(tellme.getSlug(1));
+    doc.should.have.nested
+      .property(`children[0].title`)
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property(`children[0].slug`)
+      .and.equal(tellme.getSlug(2));
+    doc.should.have.nested
+      .property(`children[1].title`)
+      .and.equal(tellme.getText(4));
+    doc.should.have.nested
+      .property(`children[1].slug`)
+      .and.equal(tellme.getSlug(4));
+
+    doc.children[1].title=tellme.getText(5);
+    await doc.save();
+    doc.should.have.property('slug').and.equal(tellme.getSlug(0));
+    doc.should.have.nested.property('child.title').and.equal(tellme.getText(1));
+    doc.should.have.nested.property('child.slug').and.equal(tellme.getSlug(1));
+    doc.should.have.nested
+      .property(`children[0].title`)
+      .and.equal(tellme.getText(2));
+    doc.should.have.nested
+      .property(`children[0].slug`)
+      .and.equal(tellme.getSlug(2));
+    doc.should.have.nested
+      .property(`children[1].title`)
+      .and.equal(tellme.getText(5));
+    doc.should.have.nested
+      .property(`children[1].slug`)
+      .and.equal(tellme.getSlug(5));
   });
 
   it('Create partial nested docs declared inline', async () => {

@@ -9,6 +9,7 @@
   "scripts": {
     "prepublish": "npm run test",
     "test": "nyc mocha  --reporter spec",
+    "report":"nyc --reporter=html --reporter=text mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "dev": "nodemon ./node_modules/.bin/mocha --reporter min --no-deprecation",
     "devinline": "nodemon ./node_modules/.bin/mocha --reporter min -g '.*inline.*' --no-deprecation",
