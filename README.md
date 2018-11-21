@@ -2,7 +2,7 @@
 
 Sophisticated slugifier plugin for Mongoose.
 
-[![npm](https://img.shields.io/npm/v/mongoose-slug-updater.svg?style=plastic)](https://www.npmjs.com/package/mongoose-slug-updater)
+[![npm](https://img.shields.io/npm/v/mongoose-slug-updater.svg)](https://www.npmjs.com/package/mongoose-slug-updater) [![Travis (.org)](https://api.travis-ci.org/YuriGor/mongoose-slug-updater.svg?branch=master)](https://travis-ci.org/YuriGor/mongoose-slug-updater)
 
 Features:
 - [Intuitive schema-based declaration](#basic-usage)
