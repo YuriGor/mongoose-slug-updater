@@ -2,7 +2,8 @@
 
 Sophisticated slugifier plugin for Mongoose.
 
-[![npm](https://img.shields.io/npm/v/mongoose-slug-updater.svg)](https://www.npmjs.com/package/mongoose-slug-updater) [![Travis (.org)](https://api.travis-ci.org/YuriGor/mongoose-slug-updater.svg?branch=master)](https://travis-ci.org/YuriGor/mongoose-slug-updater) [![Coverage Status](https://coveralls.io/repos/github/YuriGor/mongoose-slug-updater/badge.svg?branch=master)](https://coveralls.io/github/YuriGor/mongoose-slug-updater?branch=master)
+[![npm](https://img.shields.io/npm/v/mongoose-slug-updater.svg)](https://www.npmjs.com/package/mongoose-slug-updater) [![Travis (.org)](https://api.travis-ci.org/YuriGor/mongoose-slug-updater.svg?branch=master)](https://travis-ci.org/YuriGor/mongoose-slug-updater) [![Coverage Status](https://coveralls.io/repos/github/YuriGor/mongoose-slug-updater/badge.svg?branch=master)](https://coveralls.io/github/YuriGor/mongoose-slug-updater?branch=master) <br>
+[![NPM](https://nodei.co/npm/mongoose-slug-updater.png?compact=true)](https://nodei.co/npm/mongoose-slug-updater/)
 
 Features:
 - [Intuitive schema-based declaration](#basic-usage)
