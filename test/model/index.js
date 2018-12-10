@@ -25,6 +25,7 @@ const {
   UniqueNestedSchema,
 } = require('./Unique.js');
 
+const Book = require('./Book');
 const CompoundUnique = new mongoose.Schema({
   type: { type: String },
   name: { type: String },
@@ -138,4 +139,5 @@ module.exports = {
   UniqueChild,
   UniqueParent,
   UniqueNested,
+  Book
 };
