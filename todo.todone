@@ -1,0 +1,1 @@
+- counter should start with 2, not 1. If padding 0 and title ends with -2 - consider not to increment it but append another counter (https://stackoverflow.com/questions/41630233/mongoose-handle-duplicate-url-slug)
