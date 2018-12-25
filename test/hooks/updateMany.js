@@ -1,15 +1,16 @@
-'use strict';
+const mongoose = require('mongoose');
 
-const mongoose = require('mongoose'),
-  chai = require('chai'),
-  should = chai.should(),
-  assert = require('assert');
+const chai = require('chai');
+
+const should = chai.should();
+
+const assert = require('assert');
 
 const { nIterations, ShortId, Counter } = require('./../model');
 
 const tellme = require('./../tellme');
 
-describe('update', function() {
+describe('update', () => {
   beforeEach(async () => {
     await ShortId.remove({});
     await Counter.remove({});
@@ -21,12 +22,12 @@ describe('update', function() {
   });
 
   it('Update not watcher field shortId', async () => {
-    let res = await ShortId.create({
+    const res = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       otherField: tellme.getText(1),
     });
-    let { _id, slug, uniqueSlug } = res;
+    const { _id, slug, uniqueSlug } = res;
     let mdf = {
       otherField: tellme.getText(1),
     };
@@ -53,12 +54,12 @@ describe('update', function() {
   });
 
   it('Update not watcher field counter', async () => {
-    let res = await Counter.create({
+    const res = await Counter.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       otherField: tellme.getText(1),
     });
-    let { _id, slug, uniqueSlug } = res;
+    const { _id, slug, uniqueSlug } = res;
     let mdf = {
       otherField: tellme.getText(1),
     };
@@ -85,11 +86,11 @@ describe('update', function() {
   });
 
   it('Update title and check if slug was updated', async () => {
-    let res = await ShortId.create({
+    const res = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
-    let { _id, slug, uniqueSlug } = res;
+    const { _id, slug, uniqueSlug } = res;
     let mdf = {
       title: tellme.getText(2),
       // subtitle: tellme.getText(1)
@@ -113,12 +114,12 @@ describe('update', function() {
   });
 
   it('Update subtitle and check if slug was updated', async () => {
-    let res = await ShortId.create({
+    const res = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
     // console.debug('created doc', res);
-    let { _id, slug, uniqueSlug } = res;
+    const { _id, slug, uniqueSlug } = res;
     let mdf = {
       subtitle: tellme.getText(3),
     };
@@ -139,12 +140,12 @@ describe('update', function() {
   });
 
   it("Update watcher fields to the same values and check slugs wasn't changed", async () => {
-    let res = await ShortId.create({
+    const res = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
-    let { _id, slug, uniqueSlug } = res;
-    let mdf = {
+    const { _id, slug, uniqueSlug } = res;
+    const mdf = {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     };
@@ -160,7 +161,7 @@ describe('update', function() {
   });
 
   it('UpdateOne without _id', async () => {
-    let doc = await ShortId.create({
+    const doc = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
@@ -200,35 +201,24 @@ describe('update', function() {
         otherField: i,
       });
       docs[i].should.have.property('slug').and.equal(tellme.getSlug(0, 1));
-      if (i)
-        docs[i].should.have
-          .property('uniqueSlug')
-          .and.match(tellme.getShortRegex(0));
-      else
-        docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
+      if (i) docs[i].should.have.property('uniqueSlug').and.match(tellme.getShortRegex(0));
+      else docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
     }
-    await ShortId.updateMany(
-      { otherField: { $gt: 4 } },
-      { title: tellme.getText(1) }
-    );
+    // console.log(' ---- updateMany');
+    await ShortId.updateMany({ otherField: { $gt: 4 } }, { title: tellme.getText(1) });
+    // console.log(' ---- updateMany done');
 
     docs = ShortId.find({ otherField: { $lt: 5 } });
     for (let i = 0; i < docs.length; i++) {
       docs[i].should.have.property('slug').and.equal(tellme.getSlug(0, 1));
-      docs[i].should.have
-        .property('uniqueSlug')
-        .and.match(tellme.getShortRegex(0));
+      docs[i].should.have.property('uniqueSlug').and.match(tellme.getShortRegex(0));
     }
 
     docs = ShortId.find({ otherField: { $gt: 4 } });
     for (let i = 0; i < docs.length; i++) {
       docs[i].should.have.property('slug').and.equal(tellme.getSlug(2, 1));
-      if (i)
-        docs[i].should.have
-          .property('uniqueSlug')
-          .and.match(tellme.getShortRegex(2));
-      else
-        docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(2));
+      if (i) docs[i].should.have.property('uniqueSlug').and.match(tellme.getShortRegex(2));
+      else docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(2));
     }
   });
 
@@ -241,40 +231,23 @@ describe('update', function() {
         otherField: i,
       });
       docs[i].should.have.property('slug').and.equal(tellme.getSlug(0, 1));
-      if (i)
-        docs[i].should.have
-          .property('uniqueSlug')
-          .and.equal(tellme.getCounterSlug(0, i));
-      else
-        docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
+      if (i) docs[i].should.have.property('uniqueSlug').and.equal(tellme.getCounterSlug(0, i));
+      else docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
     }
-    await Counter.updateMany(
-      { otherField: { $gt: 4 } },
-      { title: tellme.getText(1) }
-    );
+    await Counter.updateMany({ otherField: { $gt: 4 } }, { title: tellme.getText(1) });
 
     docs = Counter.find({ otherField: { $lt: 5 } });
     for (let i = 0; i < docs.length; i++) {
       docs[i].should.have.property('slug').and.equal(tellme.getSlug(0, 1));
-      if (i)
-        docs[i].should.have
-          .property('uniqueSlug')
-          .and.equal(tellme.getCounterSlug(0, i));
-      else
-        docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
+      if (i) docs[i].should.have.property('uniqueSlug').and.equal(tellme.getCounterSlug(0, i));
+      else docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
     }
 
     docs = Counter.find({ otherField: { $gt: 4 } });
     for (let i = 0; i < docs.length; i++) {
       docs[i].should.have.property('slug').and.equal(tellme.getSlug(2, 1));
-      if(i)
-      docs[i].should.have
-        .property('uniqueSlug')
-        .and.equal(tellme.getCounterSlug(2,i));
-        else
-          docs[i].should.have
-        .property('uniqueSlug')
-        .and.equal(tellme.getSlug(2));
+      if (i) docs[i].should.have.property('uniqueSlug').and.equal(tellme.getCounterSlug(2, i));
+      else docs[i].should.have.property('uniqueSlug').and.equal(tellme.getSlug(2));
     }
   });
 });

@@ -1,15 +1,16 @@
-'use strict';
+const mongoose = require('mongoose');
 
-const mongoose = require('mongoose'),
-  chai = require('chai'),
-  should = chai.should(),
-  assert = require('assert');
+const chai = require('chai');
+
+const should = chai.should();
+
+const assert = require('assert');
 
 const { ShortId, Counter } = require('./../model');
 
 const tellme = require('./../tellme');
 
-describe('findOneAndUpdate', function() {
+describe('findOneAndUpdate', () => {
   beforeEach(async () => {
     await ShortId.remove({});
     await Counter.remove({});
@@ -22,19 +23,19 @@ describe('findOneAndUpdate', function() {
 
   it('Update not watcher field shortId', async () => {
     // console.log(' --- findOneAndUpdate --- ');
-    let doc = await ShortId.findOneAndUpdate(
+    const doc = await ShortId.findOneAndUpdate(
       { title: 'impossible' },
       {
         title: tellme.getText(0),
         subtitle: tellme.getText(1),
         otherField: tellme.getText(2),
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     // console.log(doc);
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
-    let { _id } = doc;
+    const { _id } = doc;
     let mdf = {
       otherField: tellme.getText(3),
     };
@@ -49,11 +50,7 @@ describe('findOneAndUpdate', function() {
       otherField: tellme.getText(4),
     };
 
-    editedDoc = await ShortId.findOneAndUpdate(
-      { _id },
-      { $set: mdf },
-      { new: true }
-    );
+    editedDoc = await ShortId.findOneAndUpdate({ _id }, { $set: mdf }, { new: true });
 
     editedDoc.should.have.property('otherField').and.equal(mdf.otherField);
 
@@ -62,19 +59,19 @@ describe('findOneAndUpdate', function() {
   });
 
   it('Update not watcher field counter', async () => {
-    let doc = await Counter.findOneAndUpdate(
+    const doc = await Counter.findOneAndUpdate(
       { title: 'impossible' },
       {
         title: tellme.getText(0),
         subtitle: tellme.getText(1),
         otherField: tellme.getText(2),
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
 
-    let { _id } = doc;
+    const { _id } = doc;
     let mdf = {
       otherField: tellme.getText(3),
     };
@@ -88,11 +85,7 @@ describe('findOneAndUpdate', function() {
     mdf = {
       otherField: tellme.getText(4),
     };
-    editedDoc = await Counter.findOneAndUpdate(
-      { _id },
-      { $set: mdf },
-      { new: true }
-    );
+    editedDoc = await Counter.findOneAndUpdate({ _id }, { $set: mdf }, { new: true });
 
     editedDoc.should.have.property('otherField').and.equal(mdf.otherField);
 
@@ -101,17 +94,17 @@ describe('findOneAndUpdate', function() {
   });
 
   it('Update title and check if slug was updated', async () => {
-    let doc = await ShortId.findOneAndUpdate(
+    const doc = await ShortId.findOneAndUpdate(
       { title: 'impossible' },
       {
         title: tellme.getText(0),
         subtitle: tellme.getText(1),
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
-    let { _id } = doc;
+    const { _id } = doc;
     let mdf = {
       title: tellme.getText(2),
       // subtitle: tellme.getText(1)
@@ -126,28 +119,24 @@ describe('findOneAndUpdate', function() {
       // subtitle: tellme.getText(1)
     };
     // console.debug('upd_id', _id);
-    editedDoc = await ShortId.findOneAndUpdate(
-      { _id },
-      { $set: mdf },
-      { new: true }
-    );
+    editedDoc = await ShortId.findOneAndUpdate({ _id }, { $set: mdf }, { new: true });
 
     editedDoc.should.have.property('slug').and.equal(tellme.getSlug(3, 1));
     editedDoc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(3));
   });
 
   it('Update subtitle and check if slug was updated', async () => {
-    let doc = await ShortId.findOneAndUpdate(
+    const doc = await ShortId.findOneAndUpdate(
       { title: 'impossible' },
       {
         title: tellme.getText(0),
         subtitle: tellme.getText(1),
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
-    let { _id } = doc;
+    const { _id } = doc;
     let mdf = {
       subtitle: tellme.getText(2),
     };
@@ -159,29 +148,25 @@ describe('findOneAndUpdate', function() {
       subtitle: tellme.getText(3),
     };
     // console.debug('upd_id', _id);
-    editedDoc = await ShortId.findOneAndUpdate(
-      { _id },
-      { $set: mdf },
-      { new: true }
-    );
+    editedDoc = await ShortId.findOneAndUpdate({ _id }, { $set: mdf }, { new: true });
 
     editedDoc.should.have.property('slug').and.equal(tellme.getSlug(0, 3));
     editedDoc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
   });
 
   it("Update watcher fields to the same values and check slugs wasn't changed", async () => {
-    let doc = await ShortId.findOneAndUpdate(
+    const doc = await ShortId.findOneAndUpdate(
       { title: 'impossible' },
       {
         title: tellme.getText(0),
         subtitle: tellme.getText(1),
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
-    let { _id } = doc;
-    let mdf = {
+    const { _id } = doc;
+    const mdf = {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     };
@@ -191,24 +176,20 @@ describe('findOneAndUpdate', function() {
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
 
-    editedDoc = await ShortId.findOneAndUpdate(
-      { _id },
-      { $set: mdf },
-      { new: true }
-    );
+    editedDoc = await ShortId.findOneAndUpdate({ _id }, { $set: mdf }, { new: true });
 
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
   });
 
   it('UpdateOne without _id', async () => {
-    let doc = await ShortId.findOneAndUpdate(
+    const doc = await ShortId.findOneAndUpdate(
       { title: 'impossible' },
       {
         title: tellme.getText(0),
         subtitle: tellme.getText(1),
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     doc.should.have.property('slug').and.equal(tellme.getSlug(0, 1));
     doc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
@@ -218,13 +199,9 @@ describe('findOneAndUpdate', function() {
       subtitle: tellme.getText(3),
     };
 
-    let editedDoc = await ShortId.findOneAndUpdate(
-      { uniqueSlug: tellme.getSlug(0) },
-      mdf,
-      {
-        new: true,
-      }
-    );
+    let editedDoc = await ShortId.findOneAndUpdate({ uniqueSlug: tellme.getSlug(0) }, mdf, {
+      new: true,
+    });
 
     editedDoc.should.have.property('slug').and.equal(tellme.getSlug(2, 3));
     editedDoc.should.have.property('uniqueSlug').and.equal(tellme.getSlug(2));
@@ -239,7 +216,7 @@ describe('findOneAndUpdate', function() {
     editedDoc = await ShortId.findOneAndUpdate(
       { slug: tellme.getSlug(2, 3) },
       { $set: mdf },
-      { new: true }
+      { new: true },
     );
 
     editedDoc.should.have.property('slug').and.equal(tellme.getSlug(4, 5));

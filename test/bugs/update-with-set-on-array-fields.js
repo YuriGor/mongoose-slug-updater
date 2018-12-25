@@ -10,9 +10,9 @@ const expect = chai.expect;
 
 const assert = require('assert');
 
-const slugGenerator = require('../../.');
+// const slugGenerator = require('../../.');
 
-mongoose.plugin(slugGenerator);
+// mongoose.plugin(slugGenerator);
 
 const ProductSchema = new mongoose.Schema({
   name: {
@@ -42,11 +42,14 @@ describe('Array update bug', () => {
     doc.should.have.property('name').and.equal('test');
     doc.should.have.property('slug').and.equal('test');
     doc.should.have.property('other_image_ids').and.deep.equal([{ name: 'imagename' }]);
+    // console.log('before findOneAndUpdate');
     doc = await Product.findOneAndUpdate(
       { _id: doc.id },
-      { name: 'test1', other_image_ids: [{ name: 'imagename1' }] },
+
+      { $set: { name: 'test1', other_image_ids: [{ name: 'imagename1' }] } },
       { new: true },
     );
+
     doc.should.have.property('name').and.equal('test1');
     doc.should.have.property('slug').and.equal('test1');
     doc.should.have.property('other_image_ids').and.deep.equal([{ name: 'imagename1' }]);
@@ -58,5 +61,15 @@ describe('Array update bug', () => {
     doc.should.have.property('name').and.equal('test2');
     doc.should.have.property('slug').and.equal('test2');
     doc.should.have.property('other_image_ids').and.deep.equal([{ name: 'imagename2' }]);
+
+    doc = await Product.findOneAndUpdate(
+      { _id: doc.id },
+      { name: 'test3', other_image_ids: [{ name: 'imagename3' }] },
+      { new: true },
+    );
+
+    doc.should.have.property('name').and.equal('test3');
+    doc.should.have.property('slug').and.equal('test3');
+    doc.should.have.property('other_image_ids').and.deep.equal([{ name: 'imagename3' }]);
   });
 });

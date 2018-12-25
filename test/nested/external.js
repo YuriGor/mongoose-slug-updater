@@ -1,23 +1,18 @@
-'use strict';
+const _ = require('lodash');
 
-const _ = require('lodash'),
-  mongoose = require('mongoose'),
-  chai = require('chai'),
-  should = chai.should(),
-  assert = require('assert');
+const mongoose = require('mongoose');
 
-const {
-  nIterations,
-  SubChild,
-  Child,
-  Parent,
-  SimpleChild,
-  SimpleParent,
-} = require('./../model');
+const chai = require('chai');
+
+const should = chai.should();
+
+const assert = require('assert');
+
+const { nIterations, SubChild, Child, Parent, SimpleChild, SimpleParent } = require('./../model');
 
 const tellme = require('./../tellme');
 
-describe('Nested Docs', function() {
+describe('Nested Docs', () => {
   beforeEach(async () => {
     await Parent.remove({});
     await SimpleParent.remove({});
@@ -29,7 +24,7 @@ describe('Nested Docs', function() {
   });
 
   it('Save simple nested doc declared in extrenal schemas', async () => {
-    let doc = await SimpleParent.create({
+    const doc = await SimpleParent.create({
       title: tellme.getText(0),
       child: {
         title: tellme.getText(1),
@@ -44,13 +39,11 @@ describe('Nested Docs', function() {
     doc.should.have.property('slug').and.equal(tellme.getSlug(0));
     doc.should.have.nested.property('child.title').and.equal(tellme.getText(1));
     doc.should.have.nested.property('child.slug').and.equal(tellme.getSlug(1));
-    doc.should.have.nested
-      .property('children.0.slug')
-      .and.equal(tellme.getSlug(2));
+    doc.should.have.nested.property('children.0.slug').and.equal(tellme.getSlug(2));
   });
 
   it('Save nested doc declared in extrenal schemas', async () => {
-    let docCfg = Parent.getNewDoc();
+    const docCfg = Parent.getNewDoc();
 
     let doc = await Parent.create(docCfg);
 
@@ -63,42 +56,43 @@ describe('Nested Docs', function() {
 
   it('UpdateOne nested docs declared in extrenal schemas', async () => {
     await Parent.updateOne({}, Parent.getNewDoc(), { upsert: true });
-    let doc = await Parent.findOne({});
+    const doc = await Parent.findOne({});
+    // console.log('doc', doc);
     Parent.testNewDoc(doc);
-    let mdf = Parent.changeDoc({});
+    const mdf = Parent.changeDoc({});
     await Parent.updateOne({ _id: doc._id }, mdf);
-    let editedDoc = await Parent.findById(doc._id);
+    const editedDoc = await Parent.findById(doc._id);
     Parent.testChangedDoc(editedDoc);
   });
 
   it('Update nested docs declared in extrenal schemas', async () => {
     await Parent.update({}, Parent.getNewDoc(), { upsert: true });
-    let doc = await Parent.findOne({});
+    const doc = await Parent.findOne({});
     Parent.testNewDoc(doc);
-    let mdf = Parent.changeDoc({});
+    const mdf = Parent.changeDoc({});
     await Parent.update({ _id: doc._id }, mdf);
-    let editedDoc = await Parent.findById(doc._id);
+    const editedDoc = await Parent.findById(doc._id);
     Parent.testChangedDoc(editedDoc);
   });
 
   it('UpdateMany nested docs declared in extrenal schemas', async () => {
     await Parent.updateMany({}, Parent.getNewDoc(), { upsert: true });
-    let doc = await Parent.findOne({});
+    const doc = await Parent.findOne({});
     Parent.testNewDoc(doc);
-    let mdf = Parent.changeDoc({});
+    const mdf = Parent.changeDoc({});
     await Parent.updateMany({ _id: doc._id }, mdf);
-    let editedDoc = await Parent.findById(doc._id);
+    const editedDoc = await Parent.findById(doc._id);
     Parent.testChangedDoc(editedDoc);
   });
 
   it('findOneAndUpdate nested docs declared in extrenal schemas', async () => {
-    let doc = await Parent.findOneAndUpdate({}, Parent.getNewDoc(), {
+    const doc = await Parent.findOneAndUpdate({}, Parent.getNewDoc(), {
       upsert: true,
       new: true,
     });
     Parent.testNewDoc(doc);
-    let mdf = Parent.changeDoc({});
-    let editedDoc = await Parent.findOneAndUpdate({ _id: doc._id }, mdf, {
+    const mdf = Parent.changeDoc({});
+    const editedDoc = await Parent.findOneAndUpdate({ _id: doc._id }, mdf, {
       new: true,
     });
     Parent.testChangedDoc(editedDoc);

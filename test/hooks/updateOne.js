@@ -1,15 +1,17 @@
-'use strict';
+const mongoose = require('mongoose');
 
-const mongoose = require('mongoose'),
-  chai = require('chai'),
-  should = chai.should(),
-  assert = require('assert');
+const chai = require('chai');
+
+const should = chai.should();
+
+const assert = require('assert');
 
 const { ShortId, Counter } = require('./../model');
 
 const tellme = require('./../tellme');
 const { nIterations } = require('./../options');
-describe('updateOne', function() {
+
+describe('updateOne', () => {
   beforeEach(async () => {
     await ShortId.remove({});
     await Counter.remove({});
@@ -21,12 +23,12 @@ describe('updateOne', function() {
   });
 
   it('Update not watcher field shortId', async () => {
-    let res = await ShortId.create({
+    const res = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       otherField: tellme.getText(1),
     });
-    let { _id, slug, uniqueSlug } = res;
+    const { _id, slug, uniqueSlug } = res;
     res.should.have
       .property('forcedSlug')
       .match(tellme.getShortRegex(1))
@@ -57,12 +59,12 @@ describe('updateOne', function() {
   });
 
   it('Update not watcher field counter', async () => {
-    let res = await Counter.create({
+    const res = await Counter.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
       otherField: tellme.getText(1),
     });
-    let { _id, slug, uniqueSlug } = res;
+    const { _id, slug, uniqueSlug } = res;
     let mdf = {
       otherField: tellme.getText(1),
     };
@@ -89,11 +91,11 @@ describe('updateOne', function() {
   });
 
   it('Update title and check if slug was updated', async () => {
-    let res = await ShortId.create({
+    const res = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
-    let { _id, slug, uniqueSlug } = res;
+    const { _id, slug, uniqueSlug } = res;
     let mdf = {
       title: tellme.getText(2),
       // subtitle: tellme.getText(1)
@@ -117,7 +119,7 @@ describe('updateOne', function() {
   });
 
   it('Update subtitle and check if slug was updated', async () => {
-    let res = await ShortId.create({
+    const res = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
@@ -126,7 +128,7 @@ describe('updateOne', function() {
       .match(tellme.getShortRegex(1))
       .and.not.equal(tellme.getSlug(1));
     // console.debug('created doc', res);
-    let { _id, slug, uniqueSlug } = res;
+    const { _id, slug, uniqueSlug } = res;
     let mdf = {
       subtitle: tellme.getText(3),
     };
@@ -156,12 +158,12 @@ describe('updateOne', function() {
   });
 
   it("Update watcher fields to the same values and check slugs wasn't changed", async () => {
-    let res = await ShortId.create({
+    const res = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });
-    let { _id, slug, uniqueSlug } = res;
-    let mdf = {
+    const { _id, slug, uniqueSlug } = res;
+    const mdf = {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     };
@@ -177,23 +179,23 @@ describe('updateOne', function() {
   });
 
   it("Update watcher fields to the same values and check counter wasn't changed", async () => {
-    let mdf = {
+    const mdf = {
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     };
-    let docs = [];
+    const docs = [];
     for (let i = 0; i < nIterations; i++) {
       docs[i] = await Counter.create(mdf);
     }
     docs[0].should.have.property('title').and.equal(tellme.getText(0));
     docs[0].should.have.property('uniqueSlug').and.equal(tellme.getSlug(0));
     for (let i = 1; i < nIterations; i++) {
-        docs[i].should.have.property('title').and.equal(tellme.getText(0));
-        docs[i].should.have.property('uniqueSlug').and.equal(tellme.getCounterSlug(0, i));
+      docs[i].should.have.property('title').and.equal(tellme.getText(0));
+      docs[i].should.have.property('uniqueSlug').and.equal(tellme.getCounterSlug(0, i));
     }
 
     for (let i = 0; i < nIterations; i++) {
-      await Counter.updateOne({_id:docs[i]._id},mdf);
+      await Counter.updateOne({ _id: docs[i]._id }, mdf);
       docs[i] = await Counter.findById(docs[i]._id);
     }
 
@@ -203,12 +205,10 @@ describe('updateOne', function() {
       docs[i].should.have.property('title').and.equal(tellme.getText(0));
       docs[i].should.have.property('uniqueSlug').and.equal(tellme.getCounterSlug(0, i));
     }
-
-
   });
 
   it('UpdateOne without _id', async () => {
-    let doc = await ShortId.create({
+    const doc = await ShortId.create({
       title: tellme.getText(0),
       subtitle: tellme.getText(1),
     });

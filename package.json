@@ -14,6 +14,7 @@
     "dev": "nodemon ./node_modules/.bin/mocha --reporter min --no-deprecation",
     "devinline": "nodemon ./node_modules/.bin/mocha --reporter min -g '.*inline.*' --no-deprecation",
     "devext": "nodemon ./node_modules/.bin/mocha --reporter min -g '.*external.*' --no-deprecation",
+    "devbugs": "nodemon ./node_modules/.bin/mocha --reporter min -g 'UpdateOne nested docs declared in extrenal schemas' --no-deprecation",
     "devcounter": "nodemon ./node_modules/.bin/mocha --reporter min -g '.*counter.*' --no-deprecation"
   },
   "repository": {
