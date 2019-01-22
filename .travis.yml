@@ -1,4 +1,4 @@
 language: node_js
 node_js:
-  - "v.11.0.0"
+  - "v11.0.0"
 after_success: npm run coverage
