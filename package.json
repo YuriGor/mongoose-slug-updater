@@ -55,7 +55,7 @@
     "node": ">= 8.3.0"
   },
   "dependencies": {
-    "deepdash": "^1.6.7",
+    "deepdash": "^1.9.4",
     "lodash": "^4.17.11",
     "shortid": "^2.2.14",
     "speakingurl": "^14.0.1"
