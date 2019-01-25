@@ -1,7 +1,7 @@
 {
   "name": "mongoose-slug-updater",
   "version": "3.1.3",
-  "description": "Schema-based slug plugin for Mongoose - single/compound - unique over collection/group - nested docs/arrays - relative/abs paths - sync on change: create/save/update/updateOne/updateMany/findOneAndUpdate tracked - $set operator - counter/shortId",
+  "description": "➔ Schema-based slug plugin for Mongoose ✓ single⋮compound ✓ unique within collection⋮group ✓ nested docs⋮arrays ✓ relative⋮abs paths ✓ sync on change: create⋮save⋮update⋮updateOne⋮updateMany⋮findOneAndUpdate ✓ $set operator ✓ counter⋮shortId",
   "main": "index.js",
   "directories": {
     "lib": "./lib"
