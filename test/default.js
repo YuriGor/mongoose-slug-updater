@@ -125,7 +125,7 @@ describe('Default plugin usage', function() {
 
   it('special characters', async ()=>{
     let doc = await ShortId.create({
-      title: "I hate this #^(@ special characters. Remove|replace&don't show me"
+      title: "I hate this \"#^(@ special characters. Remove|replace&don't show me"
     });
     doc.should.have
       .property('slug')
