@@ -60,7 +60,7 @@
     "lodash": "^4.17.11",
     "shortid": "^2.2.14",
     "speakingurl": "^14.0.1",
-    "snyk": "^1.190.0"
+    "snyk": "^1.231.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.5",
