@@ -59,8 +59,7 @@
     "deepdash": "^5.0.1",
     "lodash": "^4.17.15",
     "shortid": "^2.2.15",
-    "speakingurl": "^14.0.1",
-    "snyk": "^1.305.0"
+    "speakingurl": "^14.0.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
@@ -79,7 +78,8 @@
     "mongoose": "^5.9.7",
     "nodemon": "^2.0.2",
     "nyc": "^15.0.0",
-    "prettier": "^2.0.2"
+    "prettier": "^2.0.2",
+    "snyk": "^1.305.0"
   },
   "snyk": true
 }
