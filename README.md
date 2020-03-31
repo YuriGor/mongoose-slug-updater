@@ -93,6 +93,21 @@ var mongoose = require('mongoose'),
         slug: { type: String, slug: ["title", "subtitle"] }
 });
 ```
+### Transform Slug
+
+This option accepts a funtion which receives actual field value and can be used to tranform value before generating slug.
+
+```js
+var mongoose = require('mongoose'),
+    slug = require('mongoose-slug-updater'),
+    mongoose.plugin(slug),
+    Schema = mongoose.Schema,
+    schema = new Schema({
+        title: String,
+        subtitle: String,
+        slug: { type: String, slug: ["title", "subtitle"], transform: v => stripHtmlTags(v) }
+});
+```
 
 ### Unique slug field
 
