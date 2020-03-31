@@ -94,6 +94,22 @@ var mongoose = require('mongoose'),
 });
 ```
 
+### Transform Slug
+
+This option accept the funtion which receives actual field value and can be used to tranform value before generating slug.
+
+```js
+var mongoose = require('mongoose'),
+    slug = require('mongoose-slug-updater'),
+    mongoose.plugin(slug),
+    Schema = mongoose.Schema,
+    schema = new Schema({
+        title: String,
+        subtitle: String,
+        slug: { type: String, slug: ["title", "subtitle"], transform: v => stripHtmlTags(v) }
+});
+
+
 ### Unique slug field
 
 To create a unique slug field, you must only add add the _unique: true_ parameter in the path (also, this way the default mongo unique index gets created)
@@ -623,3 +639,4 @@ Updating with $set operator and deep paths now works too.
 All the update operators will be implemented soon.
 
 Plugin rewritten with modern js and a lot of tests were added.
+
