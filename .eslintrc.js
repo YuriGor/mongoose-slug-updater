@@ -1,11 +1,11 @@
 module.exports = {
   parser: 'babel-eslint',
-  extends: ['airbnb', 'plugin:prettier/recommended'],
+  extends: ['eslint:recommended', 'plugin:prettier/recommended'],
   env: {
     node: true,
-    mocha: true
+    mocha: true,
   },
-  plugins: ['mocha', 'react', 'jsx-a11y', 'import', 'prettier'],
+  plugins: ['mocha', 'import', 'prettier'],
   rules: {
     'max-len': ['error', 100],
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
