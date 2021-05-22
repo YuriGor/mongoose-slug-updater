@@ -2,6 +2,9 @@
 
 Sophisticated slugifier plugin for Mongoose.
 
+> There is also [PlanZed.org](https://planzed.org/) - awesome cloud mind map app created by the author of mongoose-slug-updater.  
+Plz check it, it's free and I need [feedback](https://github.com/YuriGor/PlanZed.org) 😉 
+
 [![npm](https://img.shields.io/npm/v/mongoose-slug-updater.svg)](https://www.npmjs.com/package/mongoose-slug-updater) [![Travis (.org)](https://api.travis-ci.org/YuriGor/mongoose-slug-updater.svg?branch=master)](https://travis-ci.org/YuriGor/mongoose-slug-updater) [![Coverage Status](https://coveralls.io/repos/github/YuriGor/mongoose-slug-updater/badge.svg?branch=master)](https://coveralls.io/github/YuriGor/mongoose-slug-updater?branch=master) <br>
 [![NPM](https://nodei.co/npm/mongoose-slug-updater.png?compact=true)](https://nodei.co/npm/mongoose-slug-updater/)
 
