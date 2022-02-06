@@ -1,5 +1,7 @@
 # mongoose-slug-updater
 
+# Forked Version with updated dependencies
+
 Sophisticated slugifier plugin for Mongoose.
 
 > There is also [PlanZed.org](https://planzed.org/) - awesome cloud mind map app created by the author of mongoose-slug-updater.  
